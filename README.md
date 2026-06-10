@@ -1,36 +1,67 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Osmania University Results Portal
 
-## Getting Started
+A personal/learning project that mirrors the look of the official Andhra University results portal, adapted for **Osmania University**. Admins add student results one-by-one through a protected dashboard; students look up results by **Hall Ticket Number + DOB**.
 
-First, run the development server:
+## Stack
+
+- **Next.js 16** (App Router, Turbopack)
+- **React 19** + **TypeScript 5**
+- **Tailwind CSS v4** (CSS-first config in `app/globals.css`)
+- **Supabase** (Postgres) — schema in `supabase/migrations/`
+- **jose** for JWT admin auth (no third-party auth provider)
+- **Zod** for runtime validation
+- **Vitest** for unit tests (grading calculator)
+
+## Quick start
 
 ```bash
+npm install
+cp .env.example .env.local
+# fill in NEXT_PUBLIC_SUPABASE_URL, NEXT_PUBLIC_SUPABASE_ANON_KEY,
+# SUPABASE_SERVICE_ROLE_KEY, ADMIN_USERNAME, ADMIN_PASSWORD
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Open <http://localhost:3000>.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Routes
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+| Path | Access | Purpose |
+|---|---|---|
+| `/` | public | Landing + result lookup form |
+| `/result` | public | POST handler that redirects to `/result/[htno]` |
+| `/result/[htno]` | public | Statement of Marks (print-friendly) |
+| `/notices` | public | Latest result-release notices |
+| `/admin/login` | public | Admin login |
+| `/admin` | protected | Dashboard |
+| `/admin/students` | protected | Student list with filters + pagination |
+| `/admin/students/new` | protected | Add student (info + dynamic subjects) |
+| `/admin/students/[id]/edit` | protected | Edit student |
+| `/admin/notices` | protected | CRUD notices |
+| `/api/result/lookup` | public | POST `{ hallTicket, dob }` → student result |
+| `/api/admin/login` | public | POST username/password → JWT cookie |
+| `/api/admin/students` | protected | GET (list) / POST (create) |
+| `/api/admin/students/[id]` | protected | GET / PUT / DELETE |
+| `/api/admin/notices` | protected | GET / POST |
+| `/api/admin/notices/[id]` | protected | PUT / DELETE |
 
-## Learn More
+## Grading
 
-To learn more about Next.js, take a look at the following resources:
+OU CBCS grading convention (see `lib/grading.ts` and `tests/grading.test.ts`):
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+| Marks (%) | Grade | Points |
+|---|---|---|
+| 90-100 | O | 10 |
+| 80-89 | A+ | 9 |
+| 70-79 | A | 8 |
+| 60-69 | B+ | 7 |
+| 50-59 | B | 6 |
+| 40-49 | C | 5 |
+| 36-39 | D | 4 |
+| <36 | F | 0 |
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+`SGPA = Σ(gradePoints × credits) / Σ(credits)`
 
-## Deploy on Vercel
+## Disclaimer
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+This is a **student/learning project** for personal/educational use. Always verify marks with the official [osmania.ac.in](https://www.osmania.ac.in) examination branch.

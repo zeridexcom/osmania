@@ -1,0 +1,499 @@
+<!DOCTYPE html>
+
+<html lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Osmania University - Add Student</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif:wght@400;700&amp;family=Inter:wght@400;500&amp;family=Public+Sans:wght@400;600&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "on-tertiary-fixed": "#211b00",
+                        "outline-variant": "#c3c6d5",
+                        "on-secondary-container": "#606569",
+                        "on-background": "#1b1c1d",
+                        "surface-tint": "#2259bf",
+                        "on-primary": "#ffffff",
+                        "on-error-container": "#93000a",
+                        "tertiary": "#6d5e00",
+                        "on-primary-fixed-variant": "#00419d",
+                        "error-container": "#ffdad6",
+                        "surface-container": "#efedee",
+                        "on-surface": "#1b1c1d",
+                        "inverse-primary": "#b1c5ff",
+                        "inverse-on-surface": "#f2f0f1",
+                        "surface-variant": "#e3e2e3",
+                        "secondary-container": "#dfe3e8",
+                        "primary": "#094cb2",
+                        "on-secondary-fixed-variant": "#42474b",
+                        "on-secondary-fixed": "#171c20",
+                        "secondary-fixed": "#dfe3e8",
+                        "on-surface-variant": "#434653",
+                        "surface-container-low": "#f5f3f4",
+                        "primary-container": "#3366cc",
+                        "surface-container-highest": "#e3e2e3",
+                        "on-secondary": "#ffffff",
+                        "secondary": "#5a5f63",
+                        "surface-bright": "#faf9fa",
+                        "on-primary-fixed": "#001946",
+                        "primary-fixed": "#d9e2ff",
+                        "error": "#ba1a1a",
+                        "outline": "#737784",
+                        "primary-fixed-dim": "#b1c5ff",
+                        "tertiary-fixed": "#f9e37a",
+                        "on-tertiary-fixed-variant": "#524600",
+                        "surface-container-lowest": "#ffffff",
+                        "inverse-surface": "#303031",
+                        "tertiary-container": "#bfab49",
+                        "on-tertiary-container": "#4a3f00",
+                        "on-primary-container": "#e7ebff",
+                        "background": "#faf9fa",
+                        "on-error": "#ffffff",
+                        "surface": "#faf9fa",
+                        "surface-dim": "#dbdadb",
+                        "surface-container-high": "#e9e8e9",
+                        "tertiary-fixed-dim": "#dcc661",
+                        "on-tertiary": "#ffffff",
+                        "secondary-fixed-dim": "#c2c7cc"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.125rem",
+                        "lg": "0.25rem",
+                        "xl": "0.5rem",
+                        "full": "0.75rem"
+                    },
+                    "spacing": {},
+                    "fontFamily": {
+                        "headline": ["Noto Serif", "serif"],
+                        "display": ["Noto Serif", "serif"],
+                        "body": ["Inter", "sans-serif"],
+                        "label": ["Public Sans", "sans-serif"]
+                    },
+                    "fontSize": {}
+                },
+            },
+        }
+    </script>
+<style>
+        body { font-family: 'Inter', sans-serif; background-color: #faf9fa; color: #1b1c1d; }
+        h1, h2, h3, h4, h5, h6, .font-headline { font-family: 'Noto Serif', serif; }
+        .font-label { font-family: 'Public Sans', sans-serif; }
+        
+        /* Custom scrollbar for dense administrative layouts */
+        ::-webkit-scrollbar { width: 8px; height: 8px; }
+        ::-webkit-scrollbar-track { background: #f5f3f4; }
+        ::-webkit-scrollbar-thumb { background: #c3c6d5; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: #737784; }
+
+        .ghost-border { border: 1px solid rgba(195, 198, 213, 0.4); }
+        .glass-panel { background: rgba(255, 255, 255, 0.8); backdrop-filter: blur(20px); }
+        
+        .tab-btn.active { color: #094cb2; border-bottom: 2px solid #094cb2; font-weight: 600; }
+        .tab-btn { color: #434653; border-bottom: 2px solid transparent; transition: all 0.2s ease; }
+        
+        .input-field {
+            @apply w-full bg-surface-container-lowest outline-none transition-all duration-200 text-on-surface font-body text-sm py-2 px-3 rounded-DEFAULT;
+            border: 1px solid rgba(195, 198, 213, 0.5);
+        }
+        .input-field:focus {
+            @apply border-primary ring-1 ring-primary;
+        }
+    </style>
+</head>
+<body class="flex bg-surface text-on-surface h-screen overflow-hidden">
+<!-- SideNavBar (Predicted Component) -->
+<nav class="h-screen w-72 fixed left-0 top-0 flex flex-col py-8 bg-surface-container-lowest dark:bg-surface-container-low border-r border-outline-variant/20 z-20">
+<div class="px-8 mb-8 flex flex-col items-center text-center">
+<img alt="Osmania University Logo" class="h-16 mb-4 object-contain" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDQ_GT07naJ4cS93xWlBKDZSpO0Qp-G1lmklruFD_wLBqYcNWee-TMYJQCn_j_zhOSyhSPBDAmcX_rPsYX9vPaQCE1Llp4Ccu4PunkMRVjkfIIpNwhqaGSwtBa-IBSlaCZO7bG-HAS8kOf_aeAKhF_7zHRZgUaSElL8NduKtbaXUv8fGTFZSXBHFdw2myqg6aQ5c_er6_h3KGDbWP4gbJNG69bfkj5pth7c8WFIhLPFlGpo5uPfWduAeFhzU9GSK94Ozkma-u_TFu2A"/>
+<h1 class="font-headline text-primary font-bold text-lg tracking-tight">Admin Portal</h1>
+<p class="font-label text-xs text-on-surface-variant mt-1">Osmania University</p>
+</div>
+<div class="px-6 mb-6">
+<button class="w-full bg-gradient-to-r from-primary to-primary-container text-on-primary py-2.5 rounded-lg font-label text-sm font-semibold hover:opacity-90 transition-opacity shadow-sm flex items-center justify-center gap-2">
+<span class="material-symbols-outlined text-sm">add</span> New Notice
+            </button>
+</div>
+<ul class="flex flex-col flex-grow w-full">
+<li>
+<a class="flex items-center gap-4 text-secondary dark:text-secondary-fixed px-6 py-3 hover:bg-surface-container-high dark:hover:bg-surface-container transition-all font-label uppercase tracking-widest text-xs" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 0;">dashboard</span>
+                    Dashboard
+                </a>
+</li>
+<li>
+<a class="flex items-center gap-4 text-primary dark:text-inverse-primary font-bold border-l-4 border-primary px-6 py-3 bg-surface-container-high transition-transform duration-200 translate-x-1 font-label uppercase tracking-widest text-xs" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">school</span>
+                    Students
+                </a>
+</li>
+<li>
+<a class="flex items-center gap-4 text-secondary dark:text-secondary-fixed px-6 py-3 hover:bg-surface-container-high dark:hover:bg-surface-container transition-all font-label uppercase tracking-widest text-xs" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 0;">campaign</span>
+                    Notices
+                </a>
+</li>
+</ul>
+<div class="mt-auto px-6 w-full flex flex-col gap-2">
+<a class="flex items-center gap-3 text-on-surface-variant hover:text-primary transition-colors text-sm font-label py-2" href="#">
+<span class="material-symbols-outlined text-lg">help</span> Help
+            </a>
+<a class="flex items-center gap-3 text-on-surface-variant hover:text-primary transition-colors text-sm font-label py-2" href="#">
+<span class="material-symbols-outlined text-lg">settings</span> Settings
+            </a>
+<div class="h-px bg-outline-variant/30 w-full my-2"></div>
+<a class="flex items-center gap-4 text-error px-6 py-3 hover:bg-error-container/50 transition-all font-label uppercase tracking-widest text-xs rounded -mx-6" href="#">
+<span class="material-symbols-outlined">logout</span>
+                Logout
+            </a>
+</div>
+</nav>
+<!-- Main Content Wrapper -->
+<div class="ml-72 flex-1 flex flex-col h-screen relative bg-surface-container-lowest">
+<!-- TopAppBar (Predicted Component) -->
+<header class="w-full top-0 sticky bg-surface-bright dark:bg-surface-dim flex justify-between items-center px-8 py-4 border-b border-outline-variant/20 z-10 glass-panel">
+<h2 class="font-headline text-2xl font-bold text-primary dark:text-inverse-primary tracking-tight">Add Student</h2>
+<div class="flex items-center gap-4">
+<div class="flex items-center gap-3 mr-4">
+<button class="px-4 py-2 font-label text-sm text-secondary hover:text-primary transition-colors">Cancel</button>
+<button class="px-4 py-2 font-label text-sm bg-surface-container-high text-primary rounded-DEFAULT hover:bg-surface-container transition-colors">Save &amp; Add Another</button>
+<button class="px-6 py-2 font-label text-sm bg-gradient-to-r from-primary to-primary-container text-on-primary rounded-DEFAULT shadow-sm hover:opacity-90 transition-opacity font-semibold">Save Student</button>
+</div>
+<button class="text-on-surface-variant hover:text-primary transition-colors duration-200 p-2 rounded-full hover:bg-surface-container-low">
+<span class="material-symbols-outlined">notifications</span>
+</button>
+<button class="text-on-surface-variant hover:text-primary transition-colors duration-200 p-2 rounded-full hover:bg-surface-container-low">
+<span class="material-symbols-outlined">account_circle</span>
+</button>
+</div>
+</header>
+<!-- Content Canvas -->
+<main class="flex-1 overflow-hidden flex flex-row">
+<!-- Left Side: Form Area -->
+<div class="flex-1 overflow-y-auto p-8 border-r border-outline-variant/20 bg-surface">
+<!-- Tabs -->
+<div class="flex border-b border-outline-variant/30 mb-8 font-label text-sm">
+<button class="tab-btn active px-6 py-3" onclick="switchTab('info')">Student Info</button>
+<button class="tab-btn px-6 py-3" onclick="switchTab('subjects')">Subjects &amp; Marks</button>
+</div>
+<!-- Tab 1: Student Info -->
+<div class="space-y-8 max-w-3xl" id="tab-info">
+<div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+<div class="space-y-1.5">
+<label class="block font-label text-xs text-on-surface-variant uppercase tracking-wider">Hall Ticket No.</label>
+<input class="input-field uppercase" oninput="updatePreview('htno', this.value)" placeholder="e.g. 1005-20-733-001" type="text"/>
+</div>
+<div class="space-y-1.5">
+<label class="block font-label text-xs text-on-surface-variant uppercase tracking-wider">Student Name</label>
+<input class="input-field" oninput="updatePreview('name', this.value)" placeholder="Full legal name" type="text"/>
+</div>
+<div class="space-y-1.5">
+<label class="block font-label text-xs text-on-surface-variant uppercase tracking-wider">Father's Name</label>
+<input class="input-field" placeholder="Father's name" type="text"/>
+</div>
+<div class="space-y-1.5">
+<label class="block font-label text-xs text-on-surface-variant uppercase tracking-wider">Mother's Name</label>
+<input class="input-field" placeholder="Mother's name" type="text"/>
+</div>
+<div class="space-y-1.5">
+<label class="block font-label text-xs text-on-surface-variant uppercase tracking-wider">Date of Birth</label>
+<div class="relative">
+<input class="input-field pl-10" type="date"/>
+<span class="material-symbols-outlined absolute left-3 top-2.5 text-outline text-sm">calendar_today</span>
+</div>
+</div>
+<div class="space-y-1.5">
+<label class="block font-label text-xs text-on-surface-variant uppercase tracking-wider">Course</label>
+<select class="input-field" onchange="updatePreview('course', this.options[this.selectedIndex].text)">
+<option disabled="" selected="" value="">Select Course</option>
+<option value="B.E.">B.E.</option>
+<option value="B.Tech">B.Tech</option>
+<option value="M.E.">M.E.</option>
+</select>
+</div>
+<div class="space-y-1.5">
+<label class="block font-label text-xs text-on-surface-variant uppercase tracking-wider">Branch/Specialization</label>
+<select class="input-field" onchange="updatePreview('branch', this.options[this.selectedIndex].text)">
+<option disabled="" selected="" value="">Select Branch</option>
+<option value="CSE">Computer Science and Engineering</option>
+<option value="ECE">Electronics and Communication Engg.</option>
+<option value="MECH">Mechanical Engineering</option>
+</select>
+</div>
+<div class="space-y-1.5">
+<label class="block font-label text-xs text-on-surface-variant uppercase tracking-wider">Regulation</label>
+<select class="input-field">
+<option value="CBCS">CBCS</option>
+<option value="Non-CBCS">Non-CBCS</option>
+<option value="AICTE">AICTE Model</option>
+</select>
+</div>
+<div class="grid grid-cols-2 gap-4 col-span-1 md:col-span-2">
+<div class="space-y-1.5">
+<label class="block font-label text-xs text-on-surface-variant uppercase tracking-wider">Semester</label>
+<select class="input-field" onchange="updatePreview('sem', this.value)">
+<option value="I">I</option>
+<option value="II">II</option>
+<option value="III">III</option>
+<option value="IV">IV</option>
+<option value="V">V</option>
+<option value="VI">VI</option>
+<option value="VII">VII</option>
+<option value="VIII">VIII</option>
+</select>
+</div>
+<div class="space-y-1.5 flex gap-4">
+<div class="flex-1 space-y-1.5">
+<label class="block font-label text-xs text-on-surface-variant uppercase tracking-wider">Exam Month</label>
+<select class="input-field" onchange="updatePreview('month', this.value)">
+<option value="MAY">MAY</option>
+<option value="DEC">DEC</option>
+</select>
+</div>
+<div class="flex-1 space-y-1.5">
+<label class="block font-label text-xs text-on-surface-variant uppercase tracking-wider">Exam Year</label>
+<input class="input-field" oninput="updatePreview('year', this.value)" type="number" value="2024"/>
+</div>
+</div>
+</div>
+<div class="space-y-1.5 col-span-1 md:col-span-2">
+<label class="block font-label text-xs text-on-surface-variant uppercase tracking-wider">College Info</label>
+<div class="flex gap-4">
+<input class="input-field w-32" placeholder="Code (e.g. 1005)" type="text"/>
+<input class="input-field flex-1" oninput="updatePreview('college', this.value)" placeholder="College Name" type="text"/>
+</div>
+</div>
+</div>
+</div>
+<!-- Tab 2: Subjects -->
+<div class="hidden space-y-6" id="tab-subjects">
+<div class="flex justify-between items-center">
+<h3 class="font-headline text-lg text-primary">Academic Record</h3>
+<button class="flex items-center gap-2 text-primary font-label text-sm hover:bg-surface-container-high px-3 py-1.5 rounded transition-colors" onclick="addSubjectRow()">
+<span class="material-symbols-outlined text-sm">add</span> Add Subject
+                        </button>
+</div>
+<div class="overflow-x-auto ghost-border rounded-DEFAULT bg-surface-container-lowest">
+<table class="w-full text-left border-collapse" id="subjects-table">
+<thead>
+<tr class="bg-surface-container-low font-label text-xs text-on-surface-variant uppercase tracking-wider border-b border-outline-variant/30">
+<th class="p-3 w-24">Sub Code</th>
+<th class="p-3">Subject Name</th>
+<th class="p-3 w-20 text-center">Cr.</th>
+<th class="p-3 w-32 text-center" colspan="2">Internal<br/><span class="text-[10px] font-normal">Max / Obt</span></th>
+<th class="p-3 w-32 text-center" colspan="2">External<br/><span class="text-[10px] font-normal">Max / Obt</span></th>
+<th class="p-3 w-16 text-center">Total</th>
+<th class="p-3 w-16 text-center">GR</th>
+<th class="p-3 w-16 text-center">GP</th>
+<th class="p-3 w-12 text-center"></th>
+</tr>
+</thead>
+<tbody class="font-body text-sm divide-y divide-outline-variant/20" id="subjects-body">
+<!-- Dynamic rows go here -->
+</tbody>
+<tfoot class="bg-surface-container font-label text-sm border-t-2 border-outline-variant/50">
+<tr>
+<td class="p-3 text-right font-semibold" colspan="2">Running Totals:</td>
+<td class="p-3 text-center font-bold text-primary" id="tot-cr">0</td>
+<td colspan="4"></td>
+<td class="p-3 text-center font-bold text-primary" id="tot-marks">0</td>
+<td class="p-3 text-right font-semibold" colspan="2">SGPA: <span class="text-primary ml-2" id="calc-sgpa">0.00</span></td>
+<td></td>
+</tr>
+</tfoot>
+</table>
+</div>
+<div class="text-xs text-on-surface-variant font-label flex gap-2 items-center bg-surface-container-low p-3 rounded">
+<span class="material-symbols-outlined text-sm text-tertiary">info</span>
+                        Total Max and Grade calculations are computed automatically based on NAAC grading conventions.
+                    </div>
+</div>
+</div>
+<!-- Right Side: Live Preview -->
+<div class="w-[450px] bg-surface-container-low p-6 overflow-y-auto hidden lg:block">
+<div class="sticky top-0 space-y-4">
+<h4 class="font-label text-xs uppercase tracking-widest text-on-surface-variant mb-4">Live Preview Canvas</h4>
+<!-- Preview Card mimicking official marks memo -->
+<div class="bg-surface-container-lowest p-6 rounded-lg shadow-sm border border-outline-variant/30 flex flex-col items-center">
+<!-- Header -->
+<div class="flex items-center gap-4 w-full border-b pb-4 border-outline-variant/30 mb-6">
+<img alt="OU Logo" class="h-12 object-contain grayscale opacity-80" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDQ_GT07naJ4cS93xWlBKDZSpO0Qp-G1lmklruFD_wLBqYcNWee-TMYJQCn_j_zhOSyhSPBDAmcX_rPsYX9vPaQCE1Llp4Ccu4PunkMRVjkfIIpNwhqaGSwtBa-IBSlaCZO7bG-HAS8kOf_aeAKhF_7zHRZgUaSElL8NduKtbaXUv8fGTFZSXBHFdw2myqg6aQ5c_er6_h3KGDbWP4gbJNG69bfkj5pth7c8WFIhLPFlGpo5uPfWduAeFhzU9GSK94Ozkma-u_TFu2A"/>
+<div class="text-center flex-1">
+<h5 class="font-headline font-bold text-lg leading-tight uppercase tracking-widest" style="font-family: 'Old English Text MT', 'Noto Serif', serif;">Osmania University</h5>
+<p class="font-label text-[10px] text-tertiary font-bold tracking-widest">ACCREDITED BY NAAC WITH 'A+' GRADE</p>
+<p class="font-body text-xs mt-1 text-secondary uppercase">Memorandum of Marks</p>
+</div>
+</div>
+<!-- Details -->
+<div class="w-full text-xs font-body space-y-2 mb-6">
+<div class="flex">
+<span class="w-24 text-on-surface-variant font-label uppercase">Name</span>
+<span class="font-semibold" id="prev-name">_____________</span>
+</div>
+<div class="flex">
+<span class="w-24 text-on-surface-variant font-label uppercase">Hall Ticket No</span>
+<span class="font-semibold uppercase" id="prev-htno">_____________</span>
+</div>
+<div class="flex">
+<span class="w-24 text-on-surface-variant font-label uppercase">Course</span>
+<span class="font-semibold" id="prev-course">_____________ <span id="prev-branch"></span></span>
+</div>
+<div class="flex">
+<span class="w-24 text-on-surface-variant font-label uppercase">Semester</span>
+<span class="font-semibold" id="prev-sem">__</span>
+<span class="ml-auto text-on-surface-variant font-label uppercase mr-2">Exam</span>
+<span class="font-semibold uppercase" id="prev-exam">____ 20__</span>
+</div>
+<div class="flex">
+<span class="w-24 text-on-surface-variant font-label uppercase">College</span>
+<span class="font-semibold" id="prev-college">_____________</span>
+</div>
+</div>
+<!-- Minimal Table Placeholder -->
+<div class="w-full border border-outline-variant/50 text-[10px] font-body">
+<div class="flex border-b border-outline-variant/50 bg-surface-container-low font-bold">
+<div class="w-12 p-1 border-r border-outline-variant/50 text-center">Code</div>
+<div class="flex-1 p-1 border-r border-outline-variant/50">Subject</div>
+<div class="w-8 p-1 border-r border-outline-variant/50 text-center">Cr</div>
+<div class="w-8 p-1 border-r border-outline-variant/50 text-center">GR</div>
+</div>
+<div class="min-h-[100px] text-on-surface-variant italic p-2 text-center flex items-center justify-center" id="prev-subjects-container">
+                                Awaiting subject entry...
+                            </div>
+</div>
+</div>
+</div>
+</div>
+</main>
+<!-- Footer (Predicted Component) -->
+<footer class="w-full py-4 bg-surface-container-lowest border-t border-outline-variant/20 px-8 flex justify-between items-center z-10 font-body text-sm text-on-surface-variant">
+<p>© 1917-2024 Osmania University. All Rights Reserved.</p>
+<div class="flex gap-6 font-label text-xs">
+<a class="hover:text-primary transition-colors" href="#">Privacy Policy</a>
+<a class="hover:text-primary transition-colors" href="#">Terms of Service</a>
+<a class="hover:text-primary transition-colors" href="#">Contact Us</a>
+</div>
+</footer>
+</div>
+<script>
+        function switchTab(tabId) {
+            document.getElementById('tab-info').style.display = tabId === 'info' ? 'block' : 'none';
+            document.getElementById('tab-subjects').style.display = tabId === 'subjects' ? 'block' : 'none';
+            
+            const btns = document.querySelectorAll('.tab-btn');
+            btns[0].classList.toggle('active', tabId === 'info');
+            btns[1].classList.toggle('active', tabId === 'subjects');
+        }
+
+        function updatePreview(field, value) {
+            const el = document.getElementById('prev-' + field);
+            if(el) {
+                if(field === 'exam') return; // handled separately
+                el.textContent = value || '_____________';
+                if(field === 'month' || field === 'year') {
+                    const month = document.querySelector('select[onchange="updatePreview(\'month\', this.value)"]').value;
+                    const year = document.querySelector('input[oninput="updatePreview(\'year\', this.value)"]').value;
+                    document.getElementById('prev-exam').textContent = `${month} ${year || '20__'}`;
+                }
+            }
+        }
+
+        let rowCount = 0;
+        function addSubjectRow() {
+            const tbody = document.getElementById('subjects-body');
+            const tr = document.createElement('tr');
+            tr.className = 'hover:bg-surface-bright transition-colors';
+            tr.innerHTML = `
+                <td class="p-2"><input type="text" class="w-full bg-transparent border-b border-outline-variant/30 focus:border-primary outline-none text-xs px-1" placeholder="Code"></td>
+                <td class="p-2"><input type="text" class="w-full bg-transparent border-b border-outline-variant/30 focus:border-primary outline-none text-xs px-1" placeholder="Subject Title"></td>
+                <td class="p-2"><input type="number" class="w-full text-center bg-transparent border-b border-outline-variant/30 focus:border-primary outline-none text-xs px-1 cr-input" value="3" oninput="recalc()"></td>
+                <td class="p-2"><input type="number" class="w-full text-center bg-transparent border-b border-outline-variant/30 focus:border-primary outline-none text-xs px-1 text-on-surface-variant" value="30" tabindex="-1"></td>
+                <td class="p-2"><input type="number" class="w-full text-center bg-transparent border-b border-outline-variant/30 focus:border-primary outline-none text-xs px-1 int-obt" placeholder="0" oninput="recalc()"></td>
+                <td class="p-2"><input type="number" class="w-full text-center bg-transparent border-b border-outline-variant/30 focus:border-primary outline-none text-xs px-1 text-on-surface-variant" value="70" tabindex="-1"></td>
+                <td class="p-2"><input type="number" class="w-full text-center bg-transparent border-b border-outline-variant/30 focus:border-primary outline-none text-xs px-1 ext-obt" placeholder="0" oninput="recalc()"></td>
+                <td class="p-2 text-center font-semibold tot-cell">0</td>
+                <td class="p-2 text-center font-bold text-tertiary gr-cell">-</td>
+                <td class="p-2 text-center font-semibold gp-cell">0</td>
+                <td class="p-2 text-center">
+                    <button class="text-outline hover:text-error transition-colors p-1" onclick="this.closest('tr').remove(); recalc();">
+                        <span class="material-symbols-outlined text-[18px]">delete</span>
+                    </button>
+                </td>
+            `;
+            tbody.appendChild(tr);
+            recalc();
+        }
+
+        function recalc() {
+            let totCr = 0;
+            let totMarks = 0;
+            let totPoints = 0;
+            let hasSubjects = false;
+            
+            let previewHTML = '';
+
+            const rows = document.querySelectorAll('#subjects-body tr');
+            rows.forEach(row => {
+                hasSubjects = true;
+                const cr = parseFloat(row.querySelector('.cr-input').value) || 0;
+                const intObt = parseFloat(row.querySelector('.int-obt').value) || 0;
+                const extObt = parseFloat(row.querySelector('.ext-obt').value) || 0;
+                
+                const total = intObt + extObt;
+                row.querySelector('.tot-cell').textContent = total;
+
+                // Very basic grading logic placeholder
+                let gr = '-'; let gp = 0;
+                if(total >= 90) { gr = 'O'; gp = 10; }
+                else if(total >= 80) { gr = 'A+'; gp = 9; }
+                else if(total >= 70) { gr = 'A'; gp = 8; }
+                else if(total >= 60) { gr = 'B+'; gp = 7; }
+                else if(total >= 50) { gr = 'B'; gp = 6; }
+                else if(total >= 40) { gr = 'C'; gp = 5; }
+                else if(total > 0) { gr = 'F'; gp = 0; }
+
+                row.querySelector('.gr-cell').textContent = gr;
+                row.querySelector('.gp-cell').textContent = gp;
+
+                totCr += cr;
+                totMarks += total;
+                totPoints += (cr * gp);
+
+                // Update minimal preview
+                const code = row.querySelector('input:nth-child(1)').value || '---';
+                const name = row.querySelectorAll('input')[1].value || 'Subject';
+                previewHTML += `
+                    <div class="flex border-b border-outline-variant/20 py-1 items-center">
+                        <div class="w-12 px-1 text-center truncate">${code}</div>
+                        <div class="flex-1 px-1 truncate">${name}</div>
+                        <div class="w-8 px-1 text-center">${cr}</div>
+                        <div class="w-8 px-1 text-center font-bold">${gr}</div>
+                    </div>
+                `;
+            });
+
+            document.getElementById('tot-cr').textContent = totCr;
+            document.getElementById('tot-marks').textContent = totMarks;
+            
+            const sgpa = totCr > 0 ? (totPoints / totCr).toFixed(2) : '0.00';
+            document.getElementById('calc-sgpa').textContent = sgpa;
+
+            const prevContainer = document.getElementById('prev-subjects-container');
+            if(hasSubjects) {
+                prevContainer.className = 'w-full text-[10px] font-body';
+                prevContainer.innerHTML = previewHTML;
+            } else {
+                prevContainer.className = 'min-h-[100px] text-on-surface-variant italic p-2 text-center flex items-center justify-center';
+                prevContainer.innerHTML = 'Awaiting subject entry...';
+            }
+        }
+
+        // Initialize empty state
+        addSubjectRow();
+    </script>
+</body></html>

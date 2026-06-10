@@ -1,0 +1,367 @@
+<!DOCTYPE html><html class="light" lang="en" style=""><head>
+<meta charset="utf-8">
+<meta content="width=device-width, initial-scale=1.0" name="viewport">
+<title>Osmania University - Examination Branch</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&amp;family=Noto+Serif:ital,wght@0,400;0,600;0,700;1,400;1,600&amp;family=Public+Sans:wght@600;700&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<script id="tailwind-config">
+  tailwind.config = {
+    darkMode: "class",
+    theme: {
+      extend: {
+        "colors": {
+                "surface-tint": "#2259bf",
+                "on-secondary": "#ffffff",
+                "secondary": "#5a5f63",
+                "outline-variant": "#c3c6d5",
+                "error-container": "#ffdad6",
+                "surface": "#faf9fa",
+                "surface-container": "#efedee",
+                "tertiary": "#6d5e00",
+                "on-tertiary-fixed-variant": "#524600",
+                "surface-variant": "#e3e2e3",
+                "primary-fixed-dim": "#b1c5ff",
+                "on-primary-container": "#e7ebff",
+                "on-error": "#ffffff",
+                "inverse-primary": "#b1c5ff",
+                "secondary-fixed-dim": "#c2c7cc",
+                "error": "#ba1a1a",
+                "surface-bright": "#faf9fa",
+                "inverse-surface": "#303031",
+                "on-surface": "#1b1c1d",
+                "primary": "#094cb2",
+                "on-error-container": "#93000a",
+                "surface-container-high": "#e9e8e9",
+                "on-secondary-fixed": "#171c20",
+                "background": "#faf9fa",
+                "primary-container": "#3366cc",
+                "on-primary-fixed-variant": "#00419d",
+                "primary-fixed": "#d9e2ff",
+                "surface-container-low": "#f5f3f4",
+                "surface-container-highest": "#e3e2e3",
+                "on-secondary-container": "#606569",
+                "secondary-container": "#dfe3e8",
+                "on-tertiary-container": "#4a3f00",
+                "on-primary": "#ffffff",
+                "tertiary-fixed-dim": "#dcc661",
+                "on-tertiary-fixed": "#211b00",
+                "surface-dim": "#dbdadb",
+                "tertiary-fixed": "#f9e37a",
+                "on-tertiary": "#ffffff",
+                "on-background": "#1b1c1d",
+                "on-secondary-fixed-variant": "#42474b",
+                "secondary-fixed": "#dfe3e8",
+                "on-primary-fixed": "#001946",
+                "inverse-on-surface": "#f2f0f1",
+                "outline": "#737784",
+                "surface-container-lowest": "#ffffff",
+                "on-surface-variant": "#434653",
+                "tertiary-container": "#bfab49",
+                "university-gold": "#D4AF37",
+                "academic-navy": "#002A5C",
+                "heritage-maroon": "#800000",
+                "portal-grey": "#e3e2e3"
+        },
+        "borderRadius": {
+                "DEFAULT": "0.125rem",
+                "lg": "0.25rem",
+                "xl": "0.5rem",
+                "2xl": "1rem",
+                "full": "0.75rem"
+        },
+        "spacing": {
+                "margin-mobile": "16px",
+                "container-max": "1280px",
+                "unit": "8px",
+                "margin-desktop": "64px",
+                "gutter": "24px"
+        },
+        "fontFamily": {
+                "headline": [
+                        "Noto Serif"
+                ],
+                "display": [
+                        "Noto Serif"
+                ],
+                "body": [
+                        "Inter"
+                ],
+                "label": [
+                        "Public Sans"
+                ],
+                "label-md": [
+                        "Public Sans"
+                ],
+                "caption": [
+                        "Inter"
+                ],
+                "body-md": [
+                        "Inter"
+                ],
+                "body-lg": [
+                        "Inter"
+                ],
+                "headline-lg": [
+                        "Noto Serif"
+                ],
+                "headline-md": [
+                        "Noto Serif"
+                ],
+                "headline-lg-mobile": [
+                        "Noto Serif"
+                ],
+                "display-lg": [
+                        "Noto Serif"
+                ],
+                "label-caps": [
+                        "Public Sans"
+                ],
+                "display-header": [
+                        "Noto Serif"
+                ]
+        },
+        "fontSize": {
+                "label-md": [
+                        "14px",
+                        {
+                                "lineHeight": "20px",
+                                "letterSpacing": "0.05em",
+                                "fontWeight": "600"
+                        }
+                ],
+                "caption": [
+                        "12px",
+                        {
+                                "lineHeight": "16px",
+                                "fontWeight": "400"
+                        }
+                ],
+                "body-md": [
+                        "16px",
+                        {
+                                "lineHeight": "24px",
+                                "fontWeight": "400"
+                        }
+                ],
+                "body-lg": [
+                        "18px",
+                        {
+                                "lineHeight": "28px",
+                                "fontWeight": "400"
+                        }
+                ],
+                "headline-lg": [
+                        "32px",
+                        {
+                                "lineHeight": "40px",
+                                "fontWeight": "600"
+                        }
+                ],
+                "headline-md": [
+                        "24px",
+                        {
+                                "lineHeight": "32px",
+                                "fontWeight": "600"
+                        }
+                ],
+                "headline-lg-mobile": [
+                        "28px",
+                        {
+                                "lineHeight": "36px",
+                                "fontWeight": "600"
+                        }
+                ],
+                "display-lg": [
+                        "48px",
+                        {
+                                "lineHeight": "56px",
+                                "letterSpacing": "-0.02em",
+                                "fontWeight": "700"
+                        }
+                ],
+                "label-caps": [
+                        "12px",
+                        {
+                                "lineHeight": "16px",
+                                "letterSpacing": "0.05em",
+                                "fontWeight": "700"
+                        }
+                ],
+                "display-header": [
+                        "32px",
+                        {
+                                "lineHeight": "40px",
+                                "letterSpacing": "-0.02em",
+                                "fontWeight": "700"
+                        }
+                ]
+},
+    },
+  }
+</script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .material-symbols-outlined[style*="'FILL' 1"] {
+            font-variation-settings: 'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+    </style>
+</head>
+<body class="bg-background text-on-surface font-body-md antialiased selection:bg-primary selection:text-on-primary">
+<div class="bg-surface-variant text-on-surface-variant border-b border-portal-grey py-2 px-6 flex justify-between items-center text-xs tracking-wide font-label-caps">
+<span class="">Official Portal of University Administration, Government of Telangana</span>
+<span class="flex items-center gap-1"><span class="material-symbols-outlined text-[14px]">language</span> English</span>
+</div>
+<nav class="bg-surface border-b border-portal-grey w-full sticky top-0 z-50 flex flex-col shadow-sm">
+<div class="max-w-container-max mx-auto w-full px-8 py-5 flex items-center justify-between">
+<div class="flex items-center gap-6">
+<img alt="Osmania University Logo" class="h-16 md:h-20 object-contain rounded-sm w-auto" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDcR9wjRE7ojMDjJr8z8umN-5aphfNUzDJLCFDSKnQUDhPJxWePch5mRN_zK7Ad45A3s6qspmcaA2DQlR085iMML4ZOglsYMNfddovoNCBfbINH5ALgfWjtLiJGSJw2L_NZjZi0LxmPE-2aLAV0xR2t160c8kOFcsv9j6W1yDu4b9cpEZRdSymCmiEgm_nE9s2m5OCE-7BmaVu2ztk4PuQT1XPN0n0vF2Hgfdu7U35uxLasOzXMRjlJiDNecgvK4zeo7V4ZnIWY5Wdu">
+<div>
+</div>
+</div>
+<div class="hidden md:flex items-center gap-10">
+<a class="font-label-caps text-label-caps text-primary border-b-2 border-primary font-bold pb-1 duration-100" href="#">Home</a>
+</div>
+</div>
+</nav>
+<main class="w-full flex flex-col items-center">
+<div class="w-full bg-surface-container-lowest border-b border-portal-grey py-24 px-6">
+<div class="max-w-[840px] mx-auto flex flex-col items-center text-center gap-12">
+<div class="flex flex-col gap-4">
+<h1 class="font-display-lg text-display-lg text-on-surface font-headline tracking-tight">Examination Result Lookup</h1>
+<p class="font-body-lg text-body-lg text-on-surface-variant max-w-2xl mx-auto">Enter your details below to securely access your academic results.</p>
+</div>
+<div class="w-full bg-surface rounded-2xl shadow-lg border border-portal-grey overflow-hidden text-left transition-shadow duration-300 hover:shadow-xl">
+<form class="p-10 grid grid-cols-1 md:grid-cols-2 gap-8">
+<div class="flex flex-col gap-3">
+<label class="font-label-caps text-label-caps text-on-surface-variant tracking-wider" for="registerNumber">Enter Register Number</label>
+<div class="relative">
+<span class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-on-surface-variant">lock</span>
+<input class="w-full pl-12 pr-4 py-3.5 border border-portal-grey rounded-lg focus:border-primary focus:ring-2 focus:ring-primary/20 outline-none font-body-md text-body-md transition-all duration-200 bg-surface-container-lowest shadow-sm" id="registerNumber" name="registerNumber" placeholder="e.g. 1001-20-401-001" required="" type="text">
+</div>
+</div>
+<div class="flex flex-col gap-3">
+<label class="font-label-caps text-label-caps text-on-surface-variant tracking-wider" for="yearPassout">Year of Passout</label>
+<select class="w-full px-4 py-3.5 border border-portal-grey rounded-lg focus:border-primary focus:ring-2 focus:ring-primary/20 outline-none font-body-md text-body-md bg-surface-container-lowest transition-all duration-200 shadow-sm" id="yearPassout" name="yearPassout" required="">
+<option value="">Select Year</option>
+<option value="2024">2024</option>
+<option value="2023">2023</option>
+<option value="2022">2022</option>
+<option value="2021">2021</option>
+</select>
+</div>
+<div class="col-span-1 md:col-span-2 flex flex-col gap-3 mt-2">
+<label class="font-label-caps text-label-caps text-on-surface-variant tracking-wider">Security Verification</label>
+<div class="flex flex-col sm:flex-row items-center gap-6">
+<div class="bg-surface-container border border-portal-grey px-6 py-3.5 rounded-lg font-display-header text-display-header tracking-widest select-none w-48 text-center shrink-0 shadow-inner text-on-surface" style="background-image: repeating-linear-gradient(45deg, transparent, transparent 10px, rgba(227, 226, 227, 0.5) 10px, rgba(227, 226, 227, 0.5) 20px);">
+                                                X7B9Q
+                                            </div>
+<input class="flex-1 w-full px-5 py-3.5 border border-portal-grey rounded-lg focus:border-primary focus:ring-2 focus:ring-primary/20 outline-none font-body-md text-body-md uppercase transition-all duration-200 bg-surface-container-lowest shadow-sm" placeholder="Enter CAPTCHA" required="" type="text">
+</div>
+</div>
+<div class="col-span-1 md:col-span-2 flex flex-col sm:flex-row justify-end gap-5 mt-6 pt-8 border-t border-portal-grey">
+<button class="px-8 py-3.5 border border-outline text-on-surface font-label-caps text-label-caps rounded-lg uppercase hover:bg-surface-container-low transition-colors duration-200 w-full sm:w-auto focus:ring-2 focus:ring-outline/20" type="reset">Clear Form</button>
+<button class="px-8 py-3.5 bg-primary text-on-primary font-label-caps text-label-caps rounded-lg uppercase border border-primary hover:bg-surface-tint hover:shadow-md transform hover:-translate-y-0.5 transition-all duration-200 flex justify-center items-center gap-2 w-full sm:w-auto shadow-sm focus:ring-2 focus:ring-primary/40 focus:ring-offset-2" type="submit">
+<span class="material-symbols-outlined text-[18px]">search</span>
+                                            Submit Query
+                                        </button>
+</div>
+</form>
+</div>
+</div>
+</div>
+<div class="w-full bg-surface-container-low py-20 px-6">
+<div class="max-w-container-max mx-auto">
+<div class="max-w-[840px] mx-auto border border-portal-grey rounded-2xl p-10 bg-surface-container-lowest shadow-md">
+<h3 class="font-headline-md text-headline-md text-on-surface border-b border-portal-grey pb-5 mb-8 flex items-center gap-3 font-headline">
+<span class="material-symbols-outlined text-primary text-[32px]">info</span> Instructions for Students
+                                </h3>
+<ul class="list-none font-body-md text-body-lg text-on-surface-variant space-y-5">
+<li class="flex gap-4 items-start"><span class="material-symbols-outlined text-primary mt-1 text-[22px]">check_circle</span> <span class="leading-relaxed">Enter your Hall Ticket / Register Number accurately as printed on your memo.</span></li>
+<li class="flex gap-4 items-start"><span class="material-symbols-outlined text-primary mt-1 text-[22px]">check_circle</span> <span class="leading-relaxed">The CAPTCHA code is case-sensitive. Please ensure caps lock is used correctly.</span></li>
+<li class="flex gap-4 items-start"><span class="material-symbols-outlined text-primary mt-1 text-[22px]">check_circle</span> <span class="leading-relaxed">Results published online are for immediate information only. Original mark sheets will be issued separately.</span></li>
+<li class="flex gap-4 items-start"><span class="material-symbols-outlined text-primary mt-1 text-[22px]">check_circle</span> <span class="leading-relaxed">In case of discrepancies, contact the Controller of Examinations within 15 days of result publication.</span></li>
+</ul>
+</div>
+</div>
+</div>
+<div class="max-w-container-max mx-auto w-full px-6 py-24 grid grid-cols-1 md:grid-cols-2 gap-12">
+<div class="border border-portal-grey rounded-2xl bg-surface-container-lowest shadow-md overflow-hidden flex flex-col h-full transition-shadow duration-300 hover:shadow-lg">
+<div class="bg-surface border-b border-portal-grey px-10 py-8 flex justify-between items-center">
+<h3 class="font-headline-lg text-headline-lg text-on-surface font-headline">Official Notices</h3>
+<span class="material-symbols-outlined text-[32px] text-primary">notifications</span>
+</div>
+<div class="flex flex-col divide-y divide-portal-grey flex-grow">
+<a class="p-10 hover:bg-surface-container-low transition-colors duration-200 group block" href="#">
+<div class="font-label-caps text-[12px] text-primary mb-4 tracking-wider flex items-center gap-2"><span class="w-2 h-2 rounded-full bg-primary inline-block"></span> NEW • OCT 24, 2024</div>
+<p class="font-headline-md text-[22px] leading-[32px] text-on-surface group-hover:text-primary transition-colors font-headline">Winter 2024 Results Published for B.E. / B.Tech V Semester</p>
+</a>
+<a class="p-10 hover:bg-surface-container-low transition-colors duration-200 group block" href="#">
+<div class="font-label-caps text-[12px] text-on-surface-variant mb-4 tracking-wider">OCT 15, 2024</div>
+<p class="font-headline-md text-[22px] leading-[32px] text-on-surface group-hover:text-primary transition-colors font-headline">Notification for Revaluation / Photocopy of Answer Scripts</p>
+</a>
+<a class="p-10 hover:bg-surface-container-low transition-colors duration-200 group block" href="#">
+<div class="font-label-caps text-[12px] text-on-surface-variant mb-4 tracking-wider">SEP 30, 2024</div>
+<p class="font-headline-md text-[22px] leading-[32px] text-on-surface group-hover:text-primary transition-colors font-headline">Revised Almanacs for PG Courses (M.A/M.Sc/M.Com) 2024-25</p>
+</a>
+</div>
+<a class="p-6 text-center bg-surface hover:bg-surface-container-low transition-colors duration-200 block border-t border-portal-grey mt-auto" href="#">
+<span class="font-label-caps text-[14px] tracking-wider text-primary font-bold">VIEW ALL NOTICES</span>
+</a>
+</div>
+<div class="border border-portal-grey rounded-2xl bg-surface-container-lowest shadow-md overflow-hidden flex flex-col h-full transition-shadow duration-300 hover:shadow-lg">
+<div class="bg-surface border-b border-portal-grey px-10 py-8 flex justify-between items-center">
+<h3 class="font-headline-lg text-headline-lg text-on-surface font-headline">Academic Calendar</h3>
+<span class="material-symbols-outlined text-[32px] text-primary">calendar_month</span>
+</div>
+<div class="p-10 space-y-8 flex-grow">
+<div class="flex gap-8 items-center border border-portal-grey p-8 rounded-xl bg-surface shadow-sm">
+<div class="bg-surface-container-lowest border border-portal-grey rounded-lg px-5 py-4 text-center min-w-[90px] shadow-sm flex flex-col items-center justify-center">
+<div class="font-label-caps text-[12px] text-primary tracking-wider font-bold">NOV</div>
+<div class="font-headline-lg text-[36px] text-on-surface mt-1 leading-none font-headline">15</div>
+</div>
+<div>
+<p class="font-headline-md text-[22px] leading-[32px] text-on-surface mb-2 font-headline">Last Date for Exam Fee</p>
+<p class="font-body-md text-[16px] text-on-surface-variant">Without late fee for UG Sem III</p>
+</div>
+</div>
+<div class="flex gap-8 items-center border border-portal-grey p-8 rounded-xl bg-surface shadow-sm">
+<div class="bg-surface-container-lowest border border-portal-grey rounded-lg px-5 py-4 text-center min-w-[90px] shadow-sm flex flex-col items-center justify-center">
+<div class="font-label-caps text-[12px] text-primary tracking-wider font-bold">NOV</div>
+<div class="font-headline-lg text-[36px] text-on-surface mt-1 leading-none font-headline">22</div>
+</div>
+<div>
+<p class="font-headline-md text-[22px] leading-[32px] text-on-surface mb-2 font-headline">Fee with Late Fine</p>
+<p class="font-body-md text-[16px] text-on-surface-variant">Fine of Rs. 500/- applicable</p>
+</div>
+</div>
+</div>
+<a class="p-6 text-center bg-surface hover:bg-surface-container-low transition-colors duration-200 block border-t border-portal-grey mt-auto" href="#">
+<span class="font-label-caps text-[14px] tracking-wider text-primary font-bold">VIEW FULL CALENDAR</span>
+</a>
+</div>
+</div>
+</main>
+<footer class="bg-primary-container full-width bottom-0 w-full py-16 px-8 flex flex-col md:flex-row justify-between items-center mt-auto border-t border-primary/20 shadow-inner">
+<div class="max-w-container-max mx-auto w-full flex flex-col md:flex-row justify-between items-center gap-10 md:gap-0">
+<div class="flex flex-col md:flex-row items-center md:items-start gap-8">
+<img alt="Osmania University Logo" class="h-20 object-contain rounded-sm w-auto bg-white/10 p-2" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDcR9wjRE7ojMDjJr8z8umN-5aphfNUzDJLCFDSKnQUDhPJxWePch5mRN_zK7Ad45A3s6qspmcaA2DQlR085iMML4ZOglsYMNfddovoNCBfbINH5ALgfWjtLiJGSJw2L_NZjZi0LxmPE-2aLAV0xR2t160c8kOFcsv9j6W1yDu4b9cpEZRdSymCmiEgm_nE9s2m5OCE-7BmaVu2ztk4PuQT1XPN0n0vF2Hgfdu7U35uxLasOzXMRjlJiDNecgvK4zeo7V4ZnIWY5Wdu">
+<div class="text-center md:text-left mt-2 md:mt-0">
+<span class="font-headline-md text-[28px] text-on-primary-container block font-headline tracking-tight">Osmania University</span>
+<span class="font-body-md text-[16px] text-on-primary-container/90 mt-1 block tracking-wide">Examination Branch Portal</span>
+</div>
+</div>
+<div class="flex flex-col items-center md:items-end gap-6">
+<div class="flex flex-wrap justify-center md:justify-end gap-8 mb-2">
+<a class="text-on-primary-container/90 hover:text-white font-body-md text-[15px] transition-colors duration-200" href="#">Privacy Policy</a>
+<a class="text-on-primary-container/90 hover:text-white font-body-md text-[15px] transition-colors duration-200" href="#">Terms of Service</a>
+<a class="text-on-primary-container/90 hover:text-white font-body-md text-[15px] transition-colors duration-200" href="#">Helpdesk</a>
+<a class="text-on-primary-container/90 hover:text-white font-body-md text-[15px] transition-colors duration-200" href="#">Official Portal</a>
+</div>
+<p class="font-body-md text-[13px] text-on-primary-container/70 tracking-wide">© 2024 Osmania University Examination Branch. All Rights Reserved.</p>
+</div>
+</div>
+</footer>
+</body></html>
