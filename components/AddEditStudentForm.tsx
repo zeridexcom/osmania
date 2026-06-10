@@ -741,7 +741,8 @@ export function AddEditStudentForm({
                     <thead>
                       <tr className="font-label text-xs text-on-surface-variant uppercase tracking-wider border-b border-outline-variant/30">
                         <th className="pb-2 pr-2 w-full">Subject</th>
-                        <th className="pb-2 pr-2 w-24 text-center">Marks</th>
+                        <th className="pb-2 pr-2 w-20 text-center">Marks</th>
+                        <th className="pb-2 pr-2 w-20 text-center">Max</th>
                         <th className="pb-2 w-10 text-center"></th>
                       </tr>
                     </thead>
@@ -763,8 +764,18 @@ export function AddEditStudentForm({
                               min={0}
                               value={s.marksAwarded}
                               onChange={(e) => updateSubject(s.id, { marksAwarded: Number(e.target.value) || 0 })}
-                              className="w-20 text-center bg-transparent border-b border-outline-variant/30 focus:border-primary outline-none text-xs py-1"
+                              className="w-16 text-center bg-transparent border-b border-outline-variant/30 focus:border-primary outline-none text-xs py-1"
                               placeholder="Marks"
+                            />
+                          </td>
+                          <td className="py-2 pr-2 text-center">
+                            <input
+                              type="number"
+                              min={1}
+                              value={s.maximumMarks}
+                              onChange={(e) => updateSubject(s.id, { maximumMarks: Number(e.target.value) || 100 })}
+                              className="w-16 text-center bg-transparent border-b border-outline-variant/30 focus:border-primary outline-none text-xs py-1"
+                              placeholder="Max"
                             />
                           </td>
                           <td className="py-2 text-center">
@@ -784,6 +795,7 @@ export function AddEditStudentForm({
                       <tr className="font-label text-sm">
                         <td className="pt-3 pr-2 text-right font-semibold text-on-surface-variant">Total Marks:</td>
                         <td className="pt-3 pr-2 text-center font-bold text-primary">{totalMarks}</td>
+                        <td></td>
                         <td></td>
                       </tr>
                     </tfoot>

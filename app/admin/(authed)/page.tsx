@@ -8,13 +8,10 @@ import {
   Plus,
   ArrowRight,
 } from "lucide-react";
-import { mockGetAllStudents, mockGetDashboardStats } from "@/lib/data/mock-state";
 import { serverGetAdminDashboard } from "@/lib/data/server";
 import { isAdminApiConfigured } from "@/lib/data/env";
 
 export const dynamic = "force-dynamic";
-
-const NOW = "2026-06-08T10:00:00.000Z";
 
 const COLORS = [
   { bg: "bg-primary/5", text: "text-primary" },
@@ -23,43 +20,28 @@ const COLORS = [
 ];
 
 export default async function AdminDashboardPage() {
-  let stats: { totalStudents: number; addedThisMonth: number; latestExam: { label: string; detail: string }; activeNotices: number };
-  let recent: { id: string; hallTicket: string; name: string; course: string; createdAt: string; status: string }[];
+  let stats: Awaited<ReturnType<typeof serverGetAdminDashboard>>;
 
   if (isAdminApiConfigured()) {
-    try {
-      stats = await serverGetAdminDashboard();
-      recent = mockGetAllStudents().sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()).slice(0, 5).map((s) => ({
-        id: s.id,
-        hallTicket: s.hallTicket,
-        name: s.name,
-        course: s.course,
-        createdAt: s.createdAt,
-        status: "Verified",
-      }));
-    } catch {
-      stats = mockGetDashboardStats();
-      recent = mockGetAllStudents().sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()).slice(0, 5).map((s) => ({
-        id: s.id,
-        hallTicket: s.hallTicket,
-        name: s.name,
-        course: s.course,
-        createdAt: s.createdAt,
-        status: "Verified",
-      }));
-    }
+    stats = await serverGetAdminDashboard();
   } else {
-    const mock = mockGetDashboardStats();
-    stats = { totalStudents: 42850, addedThisMonth: 342, latestExam: mock.latestExam, activeNotices: 8 };
-    const nowMs = new Date(NOW).getTime();
-    recent = [
-      { id: "1", hallTicket: "OU-24-1042", name: "Aarav Sharma", course: "Engineering", createdAt: new Date(nowMs - 1 * 3600_000).toISOString(), status: "Verified" },
-      { id: "2", hallTicket: "OU-23-8891", name: "Priya Patel", course: "Arts", createdAt: new Date(nowMs - 3 * 3600_000).toISOString(), status: "Processing" },
-      { id: "3", hallTicket: "OU-24-2100", name: "Rahul Verma", course: "Science", createdAt: new Date(nowMs - 8 * 3600_000).toISOString(), status: "Verified" },
-      { id: "4", hallTicket: "OU-22-0544", name: "Sneha Reddy", course: "Commerce", createdAt: new Date(nowMs - 24 * 3600_000).toISOString(), status: "Flagged" },
-      { id: "5", hallTicket: "OU-24-1567", name: "Vikram Singh", course: "Engineering", createdAt: new Date(nowMs - 2 * 3600_000).toISOString(), status: "Verified" },
-    ];
+    stats = {
+      totalStudents: 0,
+      addedThisMonth: 0,
+      latestExam: { label: "—", detail: "No exam data" },
+      activeNotices: 0,
+      recentStudents: [],
+    };
   }
+
+  const recent = stats.recentStudents.map((s) => ({
+    id: s.id,
+    hallTicket: s.hallTicket,
+    name: s.name,
+    course: s.course,
+    createdAt: s.createdAt,
+    status: "Verified",
+  }));
 
   const statCards = [
     { label: "Total Enrolled", value: stats.totalStudents.toLocaleString("en-IN"), icon: School },

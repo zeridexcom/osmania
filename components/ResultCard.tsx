@@ -9,16 +9,6 @@ interface ResultCardProps {
   student: PublicStudentResult;
 }
 
-function formatDateOfBirth(isoDate: string): string {
-  const d = new Date(isoDate);
-  if (Number.isNaN(d.getTime())) return isoDate;
-  return d.toLocaleDateString("en-US", {
-    day: "2-digit",
-    month: "short",
-    year: "numeric",
-  }).replace(/ /g, "-");
-}
-
 function formatExamMonthYear(month: string, year: number): string {
   return `${month.toUpperCase()} ${year}`;
 }
@@ -44,6 +34,7 @@ function romanize(num: number): string {
 
 export function ResultCard({ student }: ResultCardProps) {
   const isPass = student.resultStatus === "PASS";
+  const isCreditBased = student.cgpa !== null;
 
   return (
     <div className="w-full flex flex-col gap-6 font-body">
@@ -134,22 +125,7 @@ export function ResultCard({ student }: ResultCardProps) {
                 {student.name}
               </span>
             </div>
-            <div className="flex items-baseline justify-between border-b border-outline-variant/15 pb-1 gap-2">
-              <span className="font-label text-xs uppercase tracking-wider text-on-surface-variant font-bold w-1/3">
-                Father&apos;s Name
-              </span>
-              <span className="font-body font-semibold text-on-surface flex-1 text-right uppercase">
-                {student.fatherName}
-              </span>
-            </div>
-            <div className="flex items-baseline justify-between border-b border-outline-variant/15 pb-1 gap-2">
-              <span className="font-label text-xs uppercase tracking-wider text-on-surface-variant font-bold w-1/3">
-                DOB
-              </span>
-              <span className="font-body font-semibold text-on-surface flex-1 text-right">
-                {formatDateOfBirth(student.dob)}
-              </span>
-            </div>
+
           </div>
 
           <div className="space-y-3">
@@ -202,7 +178,7 @@ export function ResultCard({ student }: ResultCardProps) {
                 <th className="py-3.5 px-4 text-right">External</th>
                 <th className="py-3.5 px-4 text-right">Total</th>
                 <th className="py-3.5 px-4 text-center">Grade</th>
-                <th className="py-3.5 px-4 text-center">Credits</th>
+                {isCreditBased && <th className="py-3.5 px-4 text-center">Credits</th>}
               </tr>
             </thead>
             <tbody className="font-body text-sm divide-y divide-outline-variant/15 text-on-surface">
@@ -227,9 +203,11 @@ export function ResultCard({ student }: ResultCardProps) {
                   <td className="py-3 px-4 text-center font-headline font-bold text-primary">
                     {sub.grade}
                   </td>
-                  <td className="py-3 px-4 text-center font-mono text-on-surface-variant">
-                    {sub.credits}
-                  </td>
+                  {isCreditBased && (
+                    <td className="py-3 px-4 text-center font-mono text-on-surface-variant">
+                      {sub.credits}
+                    </td>
+                  )}
                 </tr>
               ))}
             </tbody>
@@ -237,30 +215,32 @@ export function ResultCard({ student }: ResultCardProps) {
         </div>
 
         {/* Results Banner Box */}
-        <div className="flex flex-col md:flex-row justify-between items-center bg-surface-container p-6 rounded-xl border border-outline-variant/30 mb-8 gap-6 md:gap-0">
-          <div className="flex gap-12">
-            <div className="flex flex-col items-center">
-              <span className="font-label text-xs text-on-surface-variant mb-1 uppercase tracking-wider font-bold">
-                SGPA
-              </span>
-              <span className="font-headline text-4xl font-bold text-on-surface">
-                {student.sgpa.toFixed(2)}
-              </span>
-            </div>
-            {student.cgpa !== null && (
-              <>
-                <div className="w-px bg-outline-variant/50 h-14" />
+          <div className="flex flex-col md:flex-row justify-between items-center bg-surface-container p-6 rounded-xl border border-outline-variant/30 mb-8 gap-6 md:gap-0">
+            <div className="flex gap-12">
+              {isCreditBased && (
                 <div className="flex flex-col items-center">
                   <span className="font-label text-xs text-on-surface-variant mb-1 uppercase tracking-wider font-bold">
-                    CGPA
+                    SGPA
                   </span>
                   <span className="font-headline text-4xl font-bold text-on-surface">
-                    {student.cgpa.toFixed(2)}
+                    {student.sgpa.toFixed(2)}
                   </span>
                 </div>
-              </>
-            )}
-          </div>
+              )}
+              {student.cgpa !== null && (
+                <>
+                  {isCreditBased && <div className="w-px bg-outline-variant/50 h-14" />}
+                  <div className="flex flex-col items-center">
+                    <span className="font-label text-xs text-on-surface-variant mb-1 uppercase tracking-wider font-bold">
+                      CGPA
+                    </span>
+                    <span className="font-headline text-4xl font-bold text-on-surface">
+                      {student.cgpa.toFixed(2)}
+                    </span>
+                  </div>
+                </>
+              )}
+            </div>
 
           {/* Stamp */}
           <div
