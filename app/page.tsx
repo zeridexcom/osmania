@@ -1,4 +1,3 @@
-import Link from "next/link";
 import { Info, Bell, CalendarDays, CheckCircle2, Megaphone } from "lucide-react";
 import { SiteHeader } from "@/components/SiteHeader";
 import { SiteFooter } from "@/components/SiteFooter";
@@ -149,10 +148,12 @@ export default async function LandingPage() {
                 </div>
               ) : (
                 latestNotices.map((n, idx) => (
-                  <Link
+                  <a
                     key={n.id}
                     className="p-8 hover:bg-surface-container-low transition-colors duration-200 group block"
-                    href="/notices"
+                    href="https://www.osmania.ac.in/"
+                    target="_blank"
+                    rel="noopener noreferrer"
                   >
                     <div className="font-label text-[10px] text-on-surface-variant mb-2 tracking-wider flex items-center gap-2">
                       {idx === 0 && (
@@ -169,16 +170,18 @@ export default async function LandingPage() {
                     <p className="font-headline text-lg leading-snug text-on-surface group-hover:text-primary transition-colors">
                       {n.title}
                     </p>
-                  </Link>
+                  </a>
                 ))
               )}
             </div>
-            <Link
+            <a
               className="p-5 text-center bg-surface hover:bg-surface-container-low transition-colors duration-200 block border-t border-outline-variant/30 mt-auto font-label text-xs tracking-widest text-primary font-bold"
-              href="/notices"
+              href="https://www.osmania.ac.in/"
+              target="_blank"
+              rel="noopener noreferrer"
             >
               VIEW ALL NOTICES
-            </Link>
+            </a>
           </div>
 
           {/* Academic Calendar Panel */}
@@ -211,12 +214,14 @@ export default async function LandingPage() {
                 </div>
               </div>
             </div>
-            <Link
+            <a
               className="p-5 text-center bg-surface hover:bg-surface-container-low transition-colors duration-200 block border-t border-outline-variant/30 mt-auto font-label text-xs tracking-widest text-primary font-bold"
-              href="#"
+              href="https://www.osmania.ac.in/"
+              target="_blank"
+              rel="noopener noreferrer"
             >
               VIEW FULL CALENDAR
-            </Link>
+            </a>
           </div>
         </section>
         </AnimateIn>

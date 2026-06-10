@@ -2,21 +2,19 @@ export function SiteFooter() {
   return (
     <footer className="bg-primary text-on-primary w-full py-12 px-6 sm:px-8 mt-auto border-t border-primary/20 shadow-inner no-print">
       <div className="max-w-[1200px] mx-auto w-full flex flex-col md:flex-row justify-between items-center gap-8 md:gap-0">
-        {/* Left Side: Branding & Crest */}
+        {/* Left Side: Logo Only */}
         <div className="flex flex-col md:flex-row items-center gap-6">
-          <img
-            alt="Osmania University Logo"
-            className="h-16 w-auto object-contain rounded-sm bg-white/10 p-2"
-            src="https://lh3.googleusercontent.com/aida-public/AB6AXuDcR9wjRE7ojMDjJr8z8umN-5aphfNUzDJLCFDSKnQUDhPJxWePch5mRN_zK7Ad45A3s6qspmcaA2DQlR085iMML4ZOglsYMNfddovoNCBfbINH5ALgfWjtLiJGSJw2L_NZjZi0LxmPE-2aLAV0xR2t160c8kOFcsv9j6W1yDu4b9cpEZRdSymCmiEgm_nE9s2m5OCE-7BmaVu2ztk4PuQT1XPN0n0vF2Hgfdu7U35uxLasOzXMRjlJiDNecgvK4zeo7V4ZnIWY5Wdu"
-          />
-          <div className="text-center md:text-left">
-            <span className="font-headline text-2xl text-on-primary block font-bold tracking-tight">
-              Osmania University
-            </span>
-            <span className="font-body text-sm text-on-primary/80 mt-0.5 block tracking-wide">
-              Examination Branch Portal
-            </span>
-          </div>
+          <a
+            href="https://www.osmania.ac.in/"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            <img
+              alt="Osmania University Logo"
+              className="h-16 w-auto object-contain rounded-sm bg-white/10 p-2"
+              src="https://lh3.googleusercontent.com/aida-public/AB6AXuDcR9wjRE7ojMDjJr8z8umN-5aphfNUzDJLCFDSKnQUDhPJxWePch5mRN_zK7Ad45A3s6qspmcaA2DQlR085iMML4ZOglsYMNfddovoNCBfbINH5ALgfWjtLiJGSJw2L_NZjZi0LxmPE-2aLAV0xR2t160c8kOFcsv9j6W1yDu4b9cpEZRdSymCmiEgm_nE9s2m5OCE-7BmaVu2ztk4PuQT1XPN0n0vF2Hgfdu7U35uxLasOzXMRjlJiDNecgvK4zeo7V4ZnIWY5Wdu"
+            />
+          </a>
         </div>
 
         {/* Right Side: Links & Copyright */}
@@ -24,25 +22,33 @@ export function SiteFooter() {
           <div className="flex flex-wrap justify-center md:justify-end gap-6 md:gap-8 mb-1">
             <a
               className="text-on-primary/80 hover:text-white font-body text-sm transition-colors duration-200"
-              href="#"
+              href="https://www.osmania.ac.in/"
+              target="_blank"
+              rel="noopener noreferrer"
             >
               Privacy Policy
             </a>
             <a
               className="text-on-primary/80 hover:text-white font-body text-sm transition-colors duration-200"
-              href="#"
+              href="https://www.osmania.ac.in/"
+              target="_blank"
+              rel="noopener noreferrer"
             >
               Terms of Service
             </a>
             <a
               className="text-on-primary/80 hover:text-white font-body text-sm transition-colors duration-200"
-              href="#"
+              href="https://www.osmania.ac.in/"
+              target="_blank"
+              rel="noopener noreferrer"
             >
               Helpdesk
             </a>
             <a
               className="text-on-primary/80 hover:text-white font-body text-sm transition-colors duration-200"
-              href="#"
+              href="https://www.osmania.ac.in/"
+              target="_blank"
+              rel="noopener noreferrer"
             >
               Official Portal
             </a>

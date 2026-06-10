@@ -3,17 +3,16 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Languages, Menu, Moon, Sun } from "lucide-react";
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { cn } from "@/lib/utils";
 
 export function SiteHeader() {
   const pathname = usePathname();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  const [isDark, setIsDark] = useState(false);
-
-  useEffect(() => {
-    setIsDark(document.documentElement.classList.contains("dark"));
-  }, []);
+  const [isDark, setIsDark] = useState(() => {
+    if (typeof document === "undefined") return false;
+    return document.documentElement.classList.contains("dark");
+  });
 
   function toggleDark() {
     const next = !isDark;
@@ -24,8 +23,6 @@ export function SiteHeader() {
 
   const navItems = [
     { href: "/", label: "Home" },
-    { href: "/notices", label: "Notices" },
-    { href: "/admin/login", label: "Admin Portal" },
   ];
 
   return (
@@ -52,7 +49,12 @@ export function SiteHeader() {
       {/* OU Header & Navigation — Dark Maroon */}
       <nav className="bg-primary w-full sticky top-0 z-50 flex flex-col shadow-md">
         <div className="max-w-[1200px] mx-auto w-full px-6 py-3 flex items-center justify-between">
-          <Link href="/" className="flex items-center gap-4">
+          <a
+            href="https://www.osmania.ac.in/"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="flex items-center gap-4"
+          >
             <img
               alt="Osmania University Logo"
               className="h-14 md:h-16 object-contain rounded-sm w-auto brightness-0 invert"
@@ -66,7 +68,7 @@ export function SiteHeader() {
                 Examination Branch Portal
               </div>
             </div>
-          </Link>
+          </a>
 
           {/* Desktop Navigation */}
           <div className="hidden md:flex items-center gap-8 font-label text-xs uppercase tracking-widest font-bold">
