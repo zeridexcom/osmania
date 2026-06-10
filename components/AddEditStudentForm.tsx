@@ -397,6 +397,7 @@ export function AddEditStudentForm({
         collegeCode: "1005",
         collegeName: "Osmania University",
         cgpa: cgpa === "" ? null : Number(cgpa),
+        sgpa: sgpa === "" ? undefined : Number(sgpa),
         resultStatus,
         subjects: subjects.map((s) => {
           if (assessmentType === "credits") {

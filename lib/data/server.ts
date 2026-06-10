@@ -211,7 +211,8 @@ export async function serverCreateAdminStudent(
   if (!session) throw new Error("unauthorized");
   const supabase = getSupabaseServiceClient();
   const finalSubjects = input.subjects.map(finalizeSubject);
-  const sgpa = computeSgpa(finalSubjects);
+  const computedSgpa = computeSgpa(finalSubjects);
+  const sgpa = input.sgpa ?? computedSgpa;
   const resultStatus = input.resultStatus ?? computeResultStatus(finalSubjects, sgpa);
   const { data: student, error: studentErr } = await supabase
     .from("students")
@@ -290,11 +291,13 @@ export async function serverUpdateAdminStudent(
   if (input.examYear !== undefined) updates.exam_year = input.examYear;
   if (input.collegeCode !== undefined) updates.college_code = input.collegeCode;
   if (input.collegeName !== undefined) updates.college_name = input.collegeName;
+  if (input.sgpa !== undefined) updates.sgpa = input.sgpa;
   if (input.cgpa !== undefined) updates.cgpa = input.cgpa;
 
   if (input.subjects !== undefined) {
     const finalSubjects = input.subjects.map(finalizeSubject);
-    updates.sgpa = computeSgpa(finalSubjects);
+    const computedSgpa = computeSgpa(finalSubjects);
+    if (input.sgpa === undefined) updates.sgpa = computedSgpa;
     updates.result_status =
       input.resultStatus ?? computeResultStatus(finalSubjects, updates.sgpa as number);
     const { error: delErr } = await supabase

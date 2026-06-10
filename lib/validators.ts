@@ -75,6 +75,7 @@ export const studentInputSchema = z.object({
   examYear: z.coerce.number().int().min(2000).max(2100),
   collegeCode: z.string().trim().min(1).max(40),
   collegeName: z.string().trim().min(1).max(200),
+  sgpa: z.coerce.number().min(0).max(10).optional(),
   cgpa: z.coerce.number().min(0).max(10).nullable().optional(),
   resultStatus: z.enum(resultStatuses).optional(),
   subjects: z.array(subjectInputSchema).min(1).max(50),
@@ -100,6 +101,7 @@ export const studentUpdateSchema = z.object({
   collegeCode: z.string().trim().min(1).max(40).optional(),
   collegeName: z.string().trim().min(1).max(200).optional(),
   cgpa: z.coerce.number().min(0).max(10).nullable().optional(),
+  sgpa: z.coerce.number().min(0).max(10).optional(),
   resultStatus: z.enum(resultStatuses).optional(),
   subjects: z.array(subjectInputSchema).min(1).max(50).optional(),
 });
