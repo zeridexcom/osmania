@@ -195,23 +195,17 @@ export function AddEditStudentForm({
 
       let extractedName = "";
       let extractedRoll = "";
-      let extractedYear = "";
 
       for (const line of lines) {
         if (!extractedRoll && /[A-Z0-9]{6,20}/.test(line)) {
           const m = line.match(/[A-Z0-9]{6,20}/);
           if (m) extractedRoll = m[0];
         }
-        if (!extractedYear && /\b(20\d{2})\b/.test(line)) {
-          const m = line.match(/\b(20\d{2})\b/);
-          if (m) extractedYear = m[1];
-        }
       }
 
       const nameLine = lines.find(
         (l) =>
           !/[A-Z0-9]{6,}/.test(l) &&
-          !/\b(20\d{2})\b/.test(l) &&
           l.length > 5 &&
           l.length < 100
       );
@@ -219,7 +213,6 @@ export function AddEditStudentForm({
 
       if (extractedName) setName(extractedName);
       if (extractedRoll) setRollNo(extractedRoll.toUpperCase());
-      if (extractedYear) setYearPassout(Number(extractedYear));
 
       const subjectLines = lines.filter(
         (l) =>
