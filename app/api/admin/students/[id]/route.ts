@@ -124,10 +124,12 @@ export async function PUT(
   if (input.collegeCode !== undefined) updates.college_code = input.collegeCode;
   if (input.collegeName !== undefined) updates.college_name = input.collegeName;
   if (input.cgpa !== undefined) updates.cgpa = input.cgpa;
+  if (input.sgpa !== undefined) updates.sgpa = input.sgpa;
 
   if (input.subjects !== undefined) {
     const finalSubjects = input.subjects.map(finalizeSubject);
-    updates.sgpa = computeSgpa(finalSubjects);
+    const computedSgpa = computeSgpa(finalSubjects);
+    if (input.sgpa === undefined) updates.sgpa = computedSgpa;
     updates.result_status =
       input.resultStatus ?? computeResultStatus(finalSubjects, updates.sgpa as number);
 

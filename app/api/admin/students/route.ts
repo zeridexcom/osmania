@@ -96,7 +96,8 @@ export async function POST(request: Request) {
 
   const input = parsed.data;
   const finalSubjects = input.subjects.map(finalizeSubject);
-  const sgpa = computeSgpa(finalSubjects);
+  const computedSgpa = computeSgpa(finalSubjects);
+  const sgpa = input.sgpa ?? computedSgpa;
   const resultStatus =
     input.resultStatus ?? computeResultStatus(finalSubjects, sgpa);
 
