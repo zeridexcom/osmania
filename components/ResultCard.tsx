@@ -258,7 +258,11 @@ export function ResultCard({ student }: ResultCardProps) {
             </p>
           </div>
           <div className="text-center sm:text-right mt-6 sm:mt-0">
-            <div className="w-32 h-10 border-b border-outline-variant/40 mb-1.5 mx-auto sm:mr-0"></div>
+            <img
+              alt="Controller of Examinations Signature"
+              className="h-14 object-contain mb-1.5 mx-auto sm:mr-0 opacity-80"
+              src="/controller-signature.png"
+            />
             <p className="font-label text-xs text-on-surface-variant font-bold uppercase tracking-wider">
               Controller of Examinations
             </p>
