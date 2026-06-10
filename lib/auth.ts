@@ -6,6 +6,8 @@ import { timingSafeEqual } from "node:crypto";
 
 const COOKIE_NAME = "admin_session";
 const TOKEN_TTL_SECONDS = 12 * 60 * 60;
+const RESULT_VIEW_COOKIE = "result_view_token";
+const RESULT_VIEW_TTL = 5 * 60; // 5 minutes
 
 export interface AdminSession {
   username: string;
@@ -104,4 +106,51 @@ export async function clearAdminCookie(): Promise<void> {
     path: "/",
     maxAge: 0,
   });
+}
+
+export async function signResultViewToken(
+  htno: string,
+  examYear: number
+): Promise<string> {
+  const now = Math.floor(Date.now() / 1000);
+  return new SignJWT({ htno, examYear })
+    .setProtectedHeader({ alg: "HS256" })
+    .setIssuedAt(now)
+    .setExpirationTime(now + RESULT_VIEW_TTL)
+    .sign(getSecretKey());
+}
+
+export async function verifyResultViewToken(
+  token: string
+): Promise<{ htno: string; examYear: number } | null> {
+  try {
+    const { payload } = await jwtVerify(token, getSecretKey());
+    const h = (payload as Record<string, unknown>).htno;
+    const ey = (payload as Record<string, unknown>).examYear;
+    if (typeof h !== "string" || typeof ey !== "number") return null;
+    return { htno: h, examYear: ey };
+  } catch {
+    return null;
+  }
+}
+
+export async function setResultViewCookie(token: string): Promise<void> {
+  const cookieStore = await cookies();
+  cookieStore.set(RESULT_VIEW_COOKIE, token, {
+    httpOnly: true,
+    sameSite: "lax",
+    secure: process.env.NODE_ENV === "production",
+    path: "/",
+    maxAge: RESULT_VIEW_TTL,
+  });
+}
+
+export async function getResultViewCookie(): Promise<{
+  htno: string;
+  examYear: number;
+} | null> {
+  const cookieStore = await cookies();
+  const token = cookieStore.get(RESULT_VIEW_COOKIE)?.value;
+  if (!token) return null;
+  return verifyResultViewToken(token);
 }

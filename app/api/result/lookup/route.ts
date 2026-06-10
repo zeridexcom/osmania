@@ -8,6 +8,10 @@ import type {
 import { sanitizeForPublic } from "@/lib/grading";
 import { publicLookupSchema } from "@/lib/validators";
 import {
+  signResultViewToken,
+  setResultViewCookie,
+} from "@/lib/auth";
+import {
   RATE_LIMIT_CONFIG,
   checkRateLimit,
   extractClientIp,
@@ -141,6 +145,9 @@ export async function POST(request: Request) {
 
   const result = sanitizeForPublic(full);
   result.verificationHash = generateVerificationHash(hallTicket, examYear);
+
+  const resultToken = await signResultViewToken(hallTicket, examYear);
+  await setResultViewCookie(resultToken);
 
   return Response.json(
     { result },

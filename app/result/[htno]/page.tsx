@@ -1,4 +1,4 @@
-import { notFound } from "next/navigation";
+import { notFound, redirect } from "next/navigation";
 import Link from "next/link";
 import { ArrowLeft, AlertTriangle } from "lucide-react";
 import { isApiConfigured } from "@/lib/data/env";
@@ -8,6 +8,7 @@ import type { PublicStudentResult } from "@/lib/types";
 import { ResultCard } from "@/components/ResultCard";
 import { SiteHeader } from "@/components/SiteHeader";
 import { SiteFooter } from "@/components/SiteFooter";
+import { getResultViewCookie } from "@/lib/auth";
 
 interface ResultDetailPageProps {
   params: Promise<{ htno: string }>;
@@ -26,6 +27,16 @@ export default async function ResultDetailPage({ params, searchParams }: ResultD
   const examYearNum = Number(examYear);
   if (!Number.isFinite(examYearNum)) {
     notFound();
+  }
+
+  const viewSession = await getResultViewCookie();
+  const isAuthorized =
+    viewSession !== null &&
+    viewSession.htno.toUpperCase() === htno.toUpperCase() &&
+    viewSession.examYear === examYearNum;
+
+  if (!isAuthorized) {
+    redirect("/");
   }
 
   let student: PublicStudentResult | null = null;
