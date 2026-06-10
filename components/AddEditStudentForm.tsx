@@ -1,34 +1,24 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import Link from "next/link";
 import {
   Save,
   CheckCircle,
   X,
-  Info,
-  PersonStanding,
-  School,
-  FolderOpen,
-  BadgeCheck,
-  CalendarDays,
-  Mail,
-  Phone,
-  MapPin,
-  Home,
+  Upload,
+  FileText,
+  Plus,
+  Trash2,
+  AlertCircle,
+  ChevronDown,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
-import {
-  SubjectRowForm,
-  emptySubjectRow,
-  rowsToSubjects,
-  type SubjectRow,
-} from "@/components/SubjectRowForm";
 import {
   clientCreateAdminStudent,
   clientUpdateAdminStudent,
 } from "@/lib/data/client";
-import { finalizeSubject, computeResultStatus, computeSgpa } from "@/lib/grading";
+import { computeResultStatus, computeSgpa, computeSubjectTotals } from "@/lib/grading";
 import type {
   CourseCode,
   Regulation,
@@ -37,25 +27,53 @@ import type {
 } from "@/lib/types";
 import type { StudentInput } from "@/lib/validators";
 
-const ROMAN: Record<number, string> = {
-  1: "I", 2: "II", 3: "III", 4: "IV", 5: "V", 6: "VI", 7: "VII", 8: "VIII",
-};
+interface SubjectEntry {
+  id: string;
+  code: string;
+  name: string;
+  credits: number;
+  internalMax: number;
+  internalObtained: number;
+  externalMax: number;
+  externalObtained: number;
+}
 
-type TabKey = "personal" | "academic" | "docs";
+function emptySubject(): SubjectEntry {
+  return {
+    id: `s_${Date.now()}_${Math.random().toString(36).slice(2, 6)}`,
+    code: "",
+    name: "",
+    credits: 3,
+    internalMax: 30,
+    internalObtained: 0,
+    externalMax: 70,
+    externalObtained: 0,
+  };
+}
 
-const COURSE_OPTIONS: { value: CourseCode; label: string }[] = [
-  { value: "BA", label: "B.A." },
-  { value: "BCOM", label: "B.Com." },
-  { value: "BSC", label: "B.Sc." },
-  { value: "BBA", label: "B.B.A." },
-  { value: "BCA", label: "B.C.A." },
-  { value: "BE", label: "B.E." },
-  { value: "BTECH", label: "B.Tech" },
-  { value: "MA", label: "M.A." },
-  { value: "MCOM", label: "M.Com." },
-  { value: "MSC", label: "M.Sc." },
-  { value: "MBA", label: "M.B.A." },
-  { value: "MCA", label: "M.C.A." },
+interface CourseOption {
+  course: CourseCode;
+  branch: string;
+  semesters: number;
+}
+
+const COURSE_OPTIONS: CourseOption[] = [
+  { course: "BA", branch: "Arts", semesters: 6 },
+  { course: "BCOM", branch: "Commerce", semesters: 6 },
+  { course: "BSC", branch: "Science", semesters: 6 },
+  { course: "BBA", branch: "Business Administration", semesters: 6 },
+  { course: "BCA", branch: "Computer Applications", semesters: 6 },
+  { course: "BE", branch: "Engineering", semesters: 8 },
+  { course: "BTECH", branch: "Computer Science and Engineering", semesters: 8 },
+  { course: "BTECH", branch: "Electronics and Communication Engg.", semesters: 8 },
+  { course: "BTECH", branch: "Mechanical Engineering", semesters: 8 },
+  { course: "BTECH", branch: "Civil Engineering", semesters: 8 },
+  { course: "BTECH", branch: "Information Technology", semesters: 8 },
+  { course: "MA", branch: "Arts (PG)", semesters: 4 },
+  { course: "MCOM", branch: "Commerce (PG)", semesters: 4 },
+  { course: "MSC", branch: "Science (PG)", semesters: 4 },
+  { course: "MBA", branch: "Business Administration (PG)", semesters: 4 },
+  { course: "MCA", branch: "Computer Applications (PG)", semesters: 6 },
 ];
 
 const REGULATION_OPTIONS: { value: Regulation; label: string }[] = [
@@ -64,21 +82,10 @@ const REGULATION_OPTIONS: { value: Regulation; label: string }[] = [
   { value: "AICTE_MODEL", label: "AICTE Model" },
 ];
 
-const SEMESTER_OPTIONS = ["I", "II", "III", "IV", "V", "VI", "VII", "VIII"];
-
-const SEMESTER_MAP: Record<string, number> = {
-  I: 1, II: 2, III: 3, IV: 4, V: 5, VI: 6, VII: 7, VIII: 8,
-};
-
-const SEMESTER_FROM_NUM = (n: number): string => ROMAN[n] ?? "I";
-
-const GENDER_OPTIONS = ["Male", "Female", "Other"];
-
 export interface AddEditStudentFormProps {
   mode: "create" | "edit";
   initial?: Student | null;
   onDone?: () => void;
-  onSaveAndAddAnother?: () => void;
 }
 
 export function AddEditStudentForm({
@@ -86,42 +93,28 @@ export function AddEditStudentForm({
   initial,
   onDone,
 }: AddEditStudentFormProps) {
-  const [tab, setTab] = useState<TabKey>("personal");
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  const [dragOver, setDragOver] = useState(false);
 
   const [htno, setHtno] = useState(initial?.hallTicket ?? "");
   const [name, setName] = useState(initial?.name ?? "");
-  const [fatherName] = useState(initial?.fatherName ?? "");
-  const [motherName] = useState(initial?.motherName ?? "");
+  const [fatherName, setFatherName] = useState(initial?.fatherName ?? "");
+  const [motherName, setMotherName] = useState(initial?.motherName ?? "");
   const [dob, setDob] = useState(initial?.dob ?? "");
-  const [gender, setGender] = useState("");
-  const [email, setEmail] = useState("");
-  const [mobile, setMobile] = useState("");
-  const [aadhaar, setAadhaar] = useState("");
-  const [permanentAddress, setPermanentAddress] = useState("");
-  const [city, setCity] = useState("");
-  const [state, setState] = useState("");
-  const [pincode, setPincode] = useState("");
-
   const [course, setCourse] = useState<CourseCode>(initial?.course ?? "BTECH");
   const [branch, setBranch] = useState(initial?.branch ?? "Computer Science and Engineering");
   const [regulation, setRegulation] = useState<Regulation>(initial?.regulation ?? "CBCS");
-  const [semester, setSemester] = useState<string>(
-    initial ? SEMESTER_FROM_NUM(initial.semester) : "VIII"
-  );
-  const [examMonth, setExamMonth] = useState<"JAN" | "MAY" | "JUL" | "DEC">(
-    (initial?.examMonth as "JAN" | "MAY" | "JUL" | "DEC" | undefined) ?? "MAY"
-  );
-  const [examYear, setExamYear] = useState(initial?.examYear ?? 2024);
+  const [semester, setSemester] = useState(initial?.semester ?? 8);
+  const [examMonth, setExamMonth] = useState(initial?.examMonth ?? "MAY");
+  const [examYear, setExamYear] = useState(initial?.examYear ?? 2026);
   const [collegeCode, setCollegeCode] = useState(initial?.collegeCode ?? "1005");
-  const [collegeName, setCollegeName] = useState(
-    initial?.collegeName ?? "University College of Engineering"
-  );
+  const [collegeName, setCollegeName] = useState(initial?.collegeName ?? "University College of Engineering");
   const [cgpa, setCgpa] = useState<number | "">(initial?.cgpa ?? "");
 
-  const [rows, setRows] = useState<SubjectRow[]>(
+  const [subjects, setSubjects] = useState<SubjectEntry[]>(
     initial
-      ? initial.subjects.map((s, i) => ({
-          id: `row_init_${i}`,
+      ? initial.subjects.map((s) => ({
+          id: `init_${s.code}`,
           code: s.code,
           name: s.name,
           credits: s.credits,
@@ -130,12 +123,12 @@ export function AddEditStudentForm({
           externalMax: s.externalMax,
           externalObtained: s.externalObtained,
         }))
-      : [emptySubjectRow(0)]
+      : [emptySubject()]
   );
-  const [totals, setTotals] = useState({ credits: 0, marks: 0, sgpa: 0 });
   const [submitting, setSubmitting] = useState(false);
   const [saved, setSaved] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [processingFile, setProcessingFile] = useState(false);
 
   useEffect(() => {
     if (!saved || !onDone) return;
@@ -143,66 +136,137 @@ export function AddEditStudentForm({
     return () => clearTimeout(t);
   }, [saved, onDone]);
 
-  async function persist(): Promise<{ ok: boolean; err?: string }> {
-    if (!name.trim() || !htno.trim() || !dob) {
-      return { ok: false, err: "Hall Ticket, Full Name, and Date of Birth are required." };
-    }
-    if (rows.length === 0) {
-      return { ok: false, err: "Add at least one subject before saving." };
-    }
-    const finalSubjects = rowsToSubjects(rows).map(finalizeSubject);
-    const sgpa = computeSgpa(finalSubjects);
-    const resultStatus: ResultStatus = computeResultStatus(finalSubjects, sgpa);
-    const payload: StudentInput = {
-      hallTicket: htno.trim(),
-      name: name.trim(),
-      fatherName: fatherName.trim(),
-      motherName: motherName.trim(),
-      dob,
-      course,
-      branch: branch.trim(),
-      regulation,
-      semester: SEMESTER_MAP[semester] ?? 1,
-      examMonth,
-      examYear,
-      collegeCode: collegeCode.trim(),
-      collegeName: collegeName.trim(),
-      cgpa: cgpa === "" ? null : Number(cgpa),
-      resultStatus,
-      subjects: finalSubjects.map((s) => ({
-        code: s.code,
-        name: s.name,
-        credits: s.credits,
-        internalMax: s.internalMax,
-        internalObtained: s.internalObtained,
-        externalMax: s.externalMax,
-        externalObtained: s.externalObtained,
-      })),
-    };
-    try {
-      if (mode === "create") { await clientCreateAdminStudent(payload); }
-      else if (initial) { await clientUpdateAdminStudent(initial.id, payload); }
-      return { ok: true };
-    } catch (err) {
-      return { ok: false, err: (err as Error).message };
+  const selectedCourse = COURSE_OPTIONS.find((c) => c.course === course && c.branch === branch);
+  const maxSem = selectedCourse?.semesters ?? 8;
+
+  function handleCourseChange(value: string) {
+    const idx = parseInt(value, 10);
+    if (!isNaN(idx) && COURSE_OPTIONS[idx]) {
+      const opt = COURSE_OPTIONS[idx];
+      setCourse(opt.course);
+      setBranch(opt.branch);
+      if (semester > opt.semesters) setSemester(opt.semesters);
     }
   }
+
+  const courseIndex = COURSE_OPTIONS.findIndex(
+    (c) => c.course === course && c.branch === branch
+  );
+
+  function updateSubject(id: string, patch: Partial<SubjectEntry>) {
+    setSubjects((prev) =>
+      prev.map((s) => (s.id === id ? { ...s, ...patch } : s))
+    );
+  }
+
+  function removeSubject(id: string) {
+    setSubjects((prev) => prev.filter((s) => s.id !== id));
+  }
+
+  function addSubject() {
+    setSubjects((prev) => [...prev, emptySubject()]);
+  }
+
+  function handleFileDrop(e: React.DragEvent) {
+    e.preventDefault();
+    setDragOver(false);
+    const file = e.dataTransfer.files[0];
+    if (file) processFile();
+  }
+
+  function handleFileSelect(e: React.ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0];
+    if (file) processFile();
+  }
+
+  async function processFile() {
+    setProcessingFile(true);
+    setError(null);
+    try {
+      await new Promise((r) => setTimeout(r, 500));
+      setError("OCR auto-extraction is not available in this environment. Please enter data manually.");
+    } catch {
+      setError("Failed to process file");
+    } finally {
+      setProcessingFile(false);
+    }
+  }
+
+  const totalCredits = subjects.reduce((a, s) => a + s.credits, 0);
+
+  const finalSubjects = subjects.map((s) => {
+    const totals = computeSubjectTotals(s);
+    return {
+      code: s.code,
+      name: s.name,
+      credits: s.credits,
+      internalMax: s.internalMax,
+      internalObtained: s.internalObtained,
+      externalMax: s.externalMax,
+      externalObtained: s.externalObtained,
+      totalMax: totals.totalMax,
+      totalObtained: totals.totalObtained,
+      grade: totals.grade,
+      gradePoints: totals.gradePoints,
+    };
+  });
+  const sgpa = computeSgpa(finalSubjects);
+  const resultStatus: ResultStatus = computeResultStatus(finalSubjects, sgpa);
 
   async function onSave(e?: React.FormEvent) {
     e?.preventDefault();
     setError(null);
-    setSubmitting(true);
-    const res = await persist();
-    setSubmitting(false);
-    if (!res.ok) { setError(res.err ?? "Save failed"); return; }
-    setSaved(true);
-  }
 
-  const tabs: { key: TabKey; label: string; icon: typeof PersonStanding }[] = [
-    { key: "personal", label: "Personal Information", icon: PersonStanding },
-    { key: "academic", label: "Academic Enrollment", icon: School },
-    { key: "docs", label: "Documentation", icon: FolderOpen },
-  ];
+    if (!name.trim() || !htno.trim() || !dob) {
+      setError("Hall Ticket, Full Name, and Date of Birth are required.");
+      return;
+    }
+    if (subjects.length === 0 || subjects.every((s) => !s.name.trim())) {
+      setError("Add at least one subject with a name.");
+      return;
+    }
+
+    setSubmitting(true);
+    try {
+      const payload: StudentInput = {
+        hallTicket: htno.trim().toUpperCase(),
+        name: name.trim(),
+        fatherName: fatherName.trim(),
+        motherName: motherName.trim(),
+        dob,
+        course,
+        branch: branch.trim(),
+        regulation,
+        semester,
+        examMonth,
+        examYear,
+        collegeCode: collegeCode.trim(),
+        collegeName: collegeName.trim(),
+        cgpa: cgpa === "" ? null : Number(cgpa),
+        resultStatus,
+        subjects: subjects.map((s) => ({
+          code: s.code,
+          name: s.name,
+          credits: s.credits,
+          internalMax: s.internalMax,
+          internalObtained: s.internalObtained,
+          externalMax: s.externalMax,
+          externalObtained: s.externalObtained,
+        })),
+      };
+
+      if (mode === "create") {
+        await clientCreateAdminStudent(payload);
+      } else if (initial) {
+        await clientUpdateAdminStudent(initial.id, payload);
+      }
+      setSaved(true);
+    } catch (err) {
+      setError((err as Error).message);
+    } finally {
+      setSubmitting(false);
+    }
+  }
 
   return (
     <div className="admin-card">
@@ -210,21 +274,32 @@ export function AddEditStudentForm({
       <div className="px-6 py-4 border-b border-outline-variant/40 flex items-center justify-between">
         <div>
           <h2 className="font-headline text-xl font-bold text-on-surface tracking-tight">
-            {mode === "create" ? "Add New Student" : "Edit Student"}
+            {mode === "create" ? "Add New Student Result" : "Edit Student Result"}
           </h2>
           <p className="font-body text-xs text-on-surface-variant mt-0.5">
-            {mode === "create" ? "Create a new academic record" : "Update existing student record"}
+            {mode === "create"
+              ? "Enter student details and academic record"
+              : "Update existing student record"}
           </p>
         </div>
         <div className="flex items-center gap-3">
           {onDone ? (
-            <button type="button" onClick={onDone} className="px-4 py-2 font-label text-sm text-on-surface-variant hover:text-primary transition-colors">Cancel</button>
+            <button type="button" onClick={onDone} className="px-4 py-2 font-label text-sm text-on-surface-variant hover:text-primary transition-colors">
+              Cancel
+            </button>
           ) : (
-            <Link href="/admin/students" className="px-4 py-2 font-label text-sm text-on-surface-variant hover:text-primary transition-colors">Cancel</Link>
+            <Link href="/admin/students" className="px-4 py-2 font-label text-sm text-on-surface-variant hover:text-primary transition-colors">
+              Cancel
+            </Link>
           )}
-          <button type="button" onClick={() => onSave()} disabled={submitting} className="px-5 py-2.5 bg-primary text-on-primary rounded-lg font-label text-xs font-bold hover:bg-primary-container hover:text-white transition-colors shadow-sm flex items-center gap-2 disabled:opacity-60">
+          <button
+            type="button"
+            onClick={() => onSave()}
+            disabled={submitting || saved}
+            className="px-5 py-2.5 bg-primary text-on-primary rounded-lg font-label text-xs font-bold hover:bg-primary-container hover:text-white transition-colors shadow-sm flex items-center gap-2 disabled:opacity-60"
+          >
             {saved ? <CheckCircle className="size-4" /> : <Save className="size-4" />}
-            {saved ? "Saved" : submitting ? "Saving..." : "Save Record"}
+            {saved ? "Saved" : submitting ? "Saving..." : "Save Result"}
           </button>
         </div>
       </div>
@@ -232,178 +307,414 @@ export function AddEditStudentForm({
       {/* Error Banner */}
       {error && (
         <div className="bg-error-container text-on-error-container px-6 py-3 flex items-center justify-between border-b border-error/30">
-          <p className="font-body text-sm">{error}</p>
-          <button type="button" onClick={() => setError(null)} className="hover:opacity-70" aria-label="Dismiss"><X className="size-4" /></button>
+          <div className="flex items-center gap-2">
+            <AlertCircle className="size-4 shrink-0" />
+            <p className="font-body text-sm">{error}</p>
+          </div>
+          <button type="button" onClick={() => setError(null)} className="hover:opacity-70" aria-label="Dismiss">
+            <X className="size-4" />
+          </button>
         </div>
       )}
 
-      {/* Tabs */}
-      <div className="flex border-b border-outline-variant/40 bg-surface-container-low px-6">
-        {tabs.map((t) => {
-          const Icon = t.icon;
-          return (
-            <button key={t.key} type="button" onClick={() => setTab(t.key)} className={cn(
-              "flex items-center gap-2 px-5 py-3 font-label text-sm transition-all border-b-2",
-              tab === t.key ? "text-primary border-primary font-semibold" : "text-on-surface-variant border-transparent hover:text-primary"
-            )}>
-              <Icon className="size-4" />
-              {t.label}
-            </button>
-          );
-        })}
-      </div>
-
       {/* Form Body */}
       <form onSubmit={onSave}>
-        <div className="p-6">
-          {tab === "personal" && (
-            <div className="space-y-8 max-w-3xl">
-              <div>
-                <h3 className="font-headline text-base font-bold text-on-surface flex items-center gap-2 mb-5">
-                  <BadgeCheck className="size-4 text-primary" />
-                  Basic Details
-                </h3>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-                  <Field label="Full Name (as per SSC)" icon={PersonStanding}>
-                    <input type="text" value={name} onChange={(e) => setName(e.target.value)} placeholder="Full legal name" className="input-field" />
-                  </Field>
-                  <Field label="Date of Birth" icon={CalendarDays}>
-                    <input type="date" value={dob} onChange={(e) => setDob(e.target.value)} className="input-field" />
-                  </Field>
-                  <Field label="Gender" icon={PersonStanding}>
-                    <select value={gender} onChange={(e) => setGender(e.target.value)} className="input-field">
-                      <option value="">Select Gender</option>
-                      {GENDER_OPTIONS.map((g) => <option key={g} value={g}>{g}</option>)}
-                    </select>
-                  </Field>
-                  <Field label="Primary Email" icon={Mail}>
-                    <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="email@example.com" className="input-field" />
-                  </Field>
-                  <Field label="Mobile Number" icon={Phone}>
-                    <input type="tel" value={mobile} onChange={(e) => setMobile(e.target.value)} placeholder="Enter mobile number" className="input-field" />
-                  </Field>
-                  <Field label="Aadhaar / National ID" icon={BadgeCheck}>
-                    <input type="text" value={aadhaar} onChange={(e) => setAadhaar(e.target.value)} placeholder="Enter Aadhaar number" className="input-field" />
-                  </Field>
-                </div>
-                <div className="mt-3 flex items-start gap-2 p-3 rounded-lg bg-surface-container border border-outline-variant/50">
-                  <Info className="size-4 text-primary shrink-0 mt-0.5" />
-                  <p className="font-body text-xs text-on-surface-variant">Must match government issued identification exactly.</p>
-                </div>
+        <div className="p-6 space-y-8">
+          {/* --- File Upload --- */}
+          <div
+            className={cn(
+              "border-2 border-dashed rounded-lg p-8 text-center transition-colors cursor-pointer",
+              dragOver
+                ? "border-primary bg-primary/5"
+                : "border-outline-variant/60 bg-surface-container-lowest hover:border-primary/40"
+            )}
+            onDragOver={(e) => { e.preventDefault(); setDragOver(true); }}
+            onDragLeave={() => setDragOver(false)}
+            onDrop={handleFileDrop}
+            onClick={() => fileInputRef.current?.click()}
+          >
+            <input
+              ref={fileInputRef}
+              type="file"
+              accept=".pdf,.png,.jpg,.jpeg"
+              className="hidden"
+              onChange={handleFileSelect}
+            />
+            <div className="flex flex-col items-center gap-3">
+              <div className="size-12 rounded-full bg-primary/10 text-primary flex items-center justify-center">
+                {processingFile ? (
+                  <div className="size-5 border-2 border-primary border-t-transparent rounded-full animate-spin" />
+                ) : (
+                  <Upload className="size-6" />
+                )}
               </div>
-
               <div>
-                <h3 className="font-headline text-base font-bold text-on-surface flex items-center gap-2 mb-5">
-                  <MapPin className="size-4 text-primary" />
-                  Address Details
-                </h3>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-                  <div className="md:col-span-2">
-                    <Field label="Permanent Address" icon={Home}>
-                      <textarea value={permanentAddress} onChange={(e) => setPermanentAddress(e.target.value)} placeholder="Enter full address" rows={3} className="input-field resize-none" />
-                    </Field>
-                  </div>
-                  <Field label="City" icon={MapPin}>
-                    <input type="text" value={city} onChange={(e) => setCity(e.target.value)} placeholder="City" className="input-field" />
-                  </Field>
-                  <Field label="State" icon={MapPin}>
-                    <input type="text" value={state} onChange={(e) => setState(e.target.value)} placeholder="State" className="input-field" />
-                  </Field>
-                  <Field label="Pincode" icon={MapPin}>
-                    <input type="text" value={pincode} onChange={(e) => setPincode(e.target.value)} placeholder="Pincode" className="input-field" />
-                  </Field>
-                </div>
+                <p className="text-base font-semibold text-primary">
+                  Upload & Drop File Here
+                </p>
+                <p className="text-sm text-on-surface-variant mt-1">
+                  PDF, PNG, JPG (Max 10MB)
+                </p>
               </div>
+              <button
+                type="button"
+                disabled={processingFile}
+                className="inline-flex items-center gap-2 px-4 py-2 rounded-lg border border-outline-variant bg-white text-on-surface font-label text-xs font-semibold hover:bg-surface-container transition-colors disabled:opacity-60"
+                onClick={(e) => { e.stopPropagation(); fileInputRef.current?.click(); }}
+              >
+                {processingFile ? (
+                  <>
+                    <div className="size-3.5 border-2 border-primary border-t-transparent rounded-full animate-spin" />
+                    Processing...
+                  </>
+                ) : (
+                  <>
+                    <FileText className="size-3.5" />
+                    Select File to Auto-Extract Data
+                  </>
+                )}
+              </button>
             </div>
-          )}
+          </div>
 
-          {tab === "academic" && (
-            <div className="space-y-8 max-w-3xl">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-                <Field label="Hall Ticket No." icon={BadgeCheck}>
-                  <input type="text" value={htno} onChange={(e) => setHtno(e.target.value.toUpperCase())} placeholder="e.g. 1005-20-733-001" className="input-field uppercase font-mono" />
-                </Field>
-                <Field label="Course" icon={School}>
-                  <select value={course} onChange={(e) => setCourse(e.target.value as CourseCode)} className="input-field">
+          {/* --- Student Details --- */}
+          <div>
+            <h3 className="font-headline text-base font-bold text-on-surface mb-5 flex items-center gap-2">
+              <FileText className="size-4 text-primary" />
+              Student Details
+            </h3>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+              <Field label="Hall Ticket No.">
+                <input
+                  type="text"
+                  value={htno}
+                  onChange={(e) => setHtno(e.target.value.toUpperCase())}
+                  placeholder="e.g. 1005-20-733-001"
+                  className="input-field uppercase font-mono"
+                />
+              </Field>
+              <Field label="Full Name">
+                <input
+                  type="text"
+                  value={name}
+                  onChange={(e) => setName(e.target.value)}
+                  placeholder="Full legal name"
+                  className="input-field"
+                />
+              </Field>
+              <Field label="Date of Birth">
+                <input
+                  type="date"
+                  value={dob}
+                  onChange={(e) => setDob(e.target.value)}
+                  className="input-field"
+                />
+              </Field>
+              <Field label="Course & Branch">
+                <div className="relative">
+                  <select
+                    value={courseIndex >= 0 ? courseIndex : ""}
+                    onChange={(e) => handleCourseChange(e.target.value)}
+                    className="input-field appearance-none pr-8"
+                  >
                     <option value="">Select Course</option>
-                    {COURSE_OPTIONS.map((o) => <option key={o.value} value={o.value}>{o.label}</option>)}
+                    {COURSE_OPTIONS.map((opt, i) => (
+                      <option key={i} value={i}>
+                        {opt.course} - {opt.branch}
+                      </option>
+                    ))}
                   </select>
-                </Field>
-                <Field label="Branch/Specialization" icon={School}>
-                  <select value={branch} onChange={(e) => setBranch(e.target.value)} className="input-field">
-                    <option value="">Select Branch</option>
-                    <option value="Computer Science and Engineering">Computer Science and Engineering</option>
-                    <option value="Electronics and Communication Engg.">Electronics and Communication Engg.</option>
-                    <option value="Mechanical Engineering">Mechanical Engineering</option>
+                  <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none text-on-surface-variant size-4" />
+                </div>
+              </Field>
+              <Field label="Semester">
+                <div className="relative">
+                  <select
+                    value={semester}
+                    onChange={(e) => setSemester(Number(e.target.value))}
+                    className="input-field appearance-none pr-8"
+                  >
+                    {Array.from({ length: maxSem }, (_, i) => (
+                      <option key={i + 1} value={i + 1}>
+                        Semester {i + 1}
+                      </option>
+                    ))}
                   </select>
-                </Field>
-                <Field label="Regulation" icon={School}>
-                  <select value={regulation} onChange={(e) => setRegulation(e.target.value as Regulation)} className="input-field">
-                    {REGULATION_OPTIONS.map((o) => <option key={o.value} value={o.value}>{o.label}</option>)}
-                  </select>
-                </Field>
-                <Field label="Semester" icon={School}>
-                  <select value={semester} onChange={(e) => setSemester(e.target.value)} className="input-field">
-                    {SEMESTER_OPTIONS.map((s) => <option key={s} value={s}>{s}</option>)}
-                  </select>
-                </Field>
-                <Field label="Exam Period" icon={CalendarDays}>
-                  <div className="flex gap-3">
-                    <select value={examMonth} onChange={(e) => { const v = e.target.value; if (v === "JAN" || v === "MAY" || v === "JUL" || v === "DEC") setExamMonth(v); }} className="input-field flex-1">
+                  <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none text-on-surface-variant size-4" />
+                </div>
+              </Field>
+              <Field label="Exam Period">
+                <div className="flex gap-2">
+                  <div className="relative flex-1">
+                    <select
+                      value={examMonth}
+                      onChange={(e) => {
+                        const v = e.target.value;
+                        if (["JAN", "MAY", "JUL", "DEC"].includes(v)) setExamMonth(v);
+                      }}
+                      className="input-field appearance-none pr-8"
+                    >
                       <option value="JAN">JAN</option>
                       <option value="MAY">MAY</option>
                       <option value="JUL">JUL</option>
                       <option value="DEC">DEC</option>
                     </select>
-                    <input type="number" value={examYear} onChange={(e) => setExamYear(Number(e.target.value) || 2024)} className="input-field w-24" />
+                    <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none text-on-surface-variant size-3.5" />
                   </div>
-                </Field>
-                <Field label="College Code" icon={School}>
-                  <input type="text" value={collegeCode} onChange={(e) => setCollegeCode(e.target.value)} placeholder="e.g. 1005" className="input-field" />
-                </Field>
-                <Field label="College Name" icon={School}>
-                  <input type="text" value={collegeName} onChange={(e) => setCollegeName(e.target.value)} placeholder="College Name" className="input-field" />
-                </Field>
-                <Field label="CGPA (optional)" icon={School}>
-                  <input type="number" step="0.01" value={cgpa === "" ? "" : cgpa} onChange={(e) => setCgpa(e.target.value === "" ? "" : Number(e.target.value))} placeholder="e.g. 8.42" className="input-field" />
-                </Field>
-                <Field label="Total Credits" icon={School}>
-                  <input type="text" value={totals.credits} readOnly className="input-field bg-surface-container font-label" />
-                </Field>
-              </div>
-
-              <div className="border-t border-outline-variant pt-8">
-                <div className="flex items-center gap-2 p-3 rounded-lg bg-surface-container border border-outline-variant/50 mb-6">
-                  <Info className="size-4 text-primary shrink-0" />
-                  <p className="font-body text-xs text-on-surface-variant">
-                    <strong>Grading Convention:</strong> Total marks, grade and SGPA are computed automatically using NAAC grading (O, A+, A, B+, B, C, D, F).
-                  </p>
+                  <input
+                    type="number"
+                    value={examYear}
+                    onChange={(e) => setExamYear(Number(e.target.value) || 2026)}
+                    className="input-field w-24"
+                  />
                 </div>
-                <SubjectRowForm rows={rows} course={course} onChange={setRows} onTotalsChange={setTotals} />
-              </div>
+              </Field>
+              <Field label="Regulation">
+                <div className="relative">
+                  <select
+                    value={regulation}
+                    onChange={(e) => setRegulation(e.target.value as Regulation)}
+                    className="input-field appearance-none pr-8"
+                  >
+                    {REGULATION_OPTIONS.map((o) => (
+                      <option key={o.value} value={o.value}>
+                        {o.label}
+                      </option>
+                    ))}
+                  </select>
+                  <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none text-on-surface-variant size-4" />
+                </div>
+              </Field>
+              <Field label="College Code">
+                <input
+                  type="text"
+                  value={collegeCode}
+                  onChange={(e) => setCollegeCode(e.target.value)}
+                  placeholder="e.g. 1005"
+                  className="input-field"
+                />
+              </Field>
+              <Field label="College Name">
+                <input
+                  type="text"
+                  value={collegeName}
+                  onChange={(e) => setCollegeName(e.target.value)}
+                  placeholder="College name"
+                  className="input-field"
+                />
+              </Field>
+              <Field label="CGPA (Overall)">
+                <input
+                  type="number"
+                  step="0.01"
+                  min="0"
+                  max="10"
+                  value={cgpa === "" ? "" : cgpa}
+                  onChange={(e) => setCgpa(e.target.value === "" ? "" : Number(e.target.value))}
+                  placeholder="e.g. 8.42"
+                  className="input-field"
+                />
+              </Field>
+              <Field label="Father Name">
+                <input
+                  type="text"
+                  value={fatherName}
+                  onChange={(e) => setFatherName(e.target.value)}
+                  placeholder="Father's name"
+                  className="input-field"
+                />
+              </Field>
+              <Field label="Mother Name">
+                <input
+                  type="text"
+                  value={motherName}
+                  onChange={(e) => setMotherName(e.target.value)}
+                  placeholder="Mother's name"
+                  className="input-field"
+                />
+              </Field>
             </div>
-          )}
+          </div>
 
-          {tab === "docs" && (
-            <div className="max-w-3xl text-center py-16">
-              <div className="size-16 rounded-full bg-surface-container text-on-surface-variant flex items-center justify-center mx-auto mb-4">
-                <FolderOpen className="size-8" />
+          {/* --- Subjects --- */}
+          <div className="border border-outline-variant/40 rounded-lg p-4 space-y-4">
+            <div className="flex items-center justify-between">
+              <div>
+                <h3 className="font-headline text-base font-bold text-on-surface">
+                  Subjects
+                </h3>
+                <p className="font-body text-xs text-on-surface-variant mt-0.5">
+                  Add the subjects for this semester
+                </p>
               </div>
-              <h3 className="font-headline text-lg font-bold text-on-surface mb-2">Documentation</h3>
-              <p className="font-body text-sm text-on-surface-variant">Document upload functionality will be available in a future update.</p>
+              <button
+                type="button"
+                onClick={addSubject}
+                className="inline-flex items-center gap-1.5 px-3 py-1.5 border border-outline-variant rounded-lg font-label text-xs font-semibold text-on-surface hover:bg-surface-container transition-colors"
+              >
+                <Plus className="size-3.5" />
+                Add Subject
+              </button>
             </div>
-          )}
+
+            {subjects.length === 0 ? (
+              <div className="py-8 text-center text-on-surface-variant font-body text-sm italic">
+                No subjects yet. Click &quot;Add Subject&quot; to begin.
+              </div>
+            ) : (
+              <div className="overflow-x-auto">
+                <table className="w-full text-left border-collapse">
+                  <thead>
+                    <tr className="font-label text-xs text-on-surface-variant uppercase tracking-wider border-b border-outline-variant/30">
+                      <th className="pb-2 pr-2 w-24">Code</th>
+                      <th className="pb-2 pr-2">Subject Name</th>
+                      <th className="pb-2 pr-2 w-16 text-center">Cr.</th>
+                      <th className="pb-2 pr-2 w-20 text-center" colSpan={2}>Internal (Max/Obt)</th>
+                      <th className="pb-2 pr-2 w-20 text-center" colSpan={2}>External (Max/Obt)</th>
+                      <th className="pb-2 pr-2 w-14 text-center">Total</th>
+                      <th className="pb-2 pr-2 w-12 text-center">Grade</th>
+                      <th className="pb-2 pr-2 w-12 text-center">GP</th>
+                      <th className="pb-2 w-10 text-center"></th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-outline-variant/20">
+                    {subjects.map((s) => {
+                      const totals = computeSubjectTotals(s);
+                      return (
+                        <tr key={s.id} className="hover:bg-surface-container-low transition-colors">
+                          <td className="py-2 pr-2">
+                            <input
+                              type="text"
+                              value={s.code}
+                              onChange={(e) => updateSubject(s.id, { code: e.target.value.toUpperCase() })}
+                              placeholder="Code"
+                              className="w-full bg-transparent border-b border-outline-variant/30 focus:border-primary outline-none text-xs px-1 py-1 font-mono"
+                            />
+                          </td>
+                          <td className="py-2 pr-2">
+                            <input
+                              type="text"
+                              value={s.name}
+                              onChange={(e) => updateSubject(s.id, { name: e.target.value })}
+                              placeholder="Subject name"
+                              className="w-full bg-transparent border-b border-outline-variant/30 focus:border-primary outline-none text-xs px-1 py-1"
+                            />
+                          </td>
+                          <td className="py-2 pr-2 text-center">
+                            <input
+                              type="number"
+                              min={0}
+                              max={20}
+                              value={s.credits}
+                              onChange={(e) => updateSubject(s.id, { credits: Number(e.target.value) || 0 })}
+                              className="w-14 text-center bg-transparent border-b border-outline-variant/30 focus:border-primary outline-none text-xs py-1"
+                            />
+                          </td>
+                          <td className="py-2 pr-1 text-center">
+                            <input
+                              type="number"
+                              min={0}
+                              value={s.internalMax}
+                              tabIndex={-1}
+                              onChange={(e) => updateSubject(s.id, { internalMax: Number(e.target.value) || 0 })}
+                              className="w-12 text-center bg-transparent border-b border-outline-variant/30 focus:border-primary outline-none text-xs py-1 text-on-surface-variant"
+                              title="Internal Max"
+                            />
+                          </td>
+                          <td className="py-2 pr-2 text-center">
+                            <input
+                              type="number"
+                              min={0}
+                              value={s.internalObtained}
+                              onChange={(e) => updateSubject(s.id, { internalObtained: Number(e.target.value) || 0 })}
+                              className="w-12 text-center bg-transparent border-b border-outline-variant/30 focus:border-primary outline-none text-xs py-1"
+                              title="Internal Obtained"
+                            />
+                          </td>
+                          <td className="py-2 pr-1 text-center">
+                            <input
+                              type="number"
+                              min={0}
+                              value={s.externalMax}
+                              tabIndex={-1}
+                              onChange={(e) => updateSubject(s.id, { externalMax: Number(e.target.value) || 0 })}
+                              className="w-12 text-center bg-transparent border-b border-outline-variant/30 focus:border-primary outline-none text-xs py-1 text-on-surface-variant"
+                              title="External Max"
+                            />
+                          </td>
+                          <td className="py-2 pr-2 text-center">
+                            <input
+                              type="number"
+                              min={0}
+                              value={s.externalObtained}
+                              onChange={(e) => updateSubject(s.id, { externalObtained: Number(e.target.value) || 0 })}
+                              className="w-12 text-center bg-transparent border-b border-outline-variant/30 focus:border-primary outline-none text-xs py-1"
+                              title="External Obtained"
+                            />
+                          </td>
+                          <td className="py-2 pr-2 text-center font-semibold text-sm">
+                            {totals.totalObtained}
+                          </td>
+                          <td
+                            className={cn(
+                              "py-2 pr-2 text-center font-bold text-sm",
+                              totals.grade === "F" ? "text-error" : "text-tertiary"
+                            )}
+                          >
+                            {totals.grade}
+                          </td>
+                          <td className="py-2 pr-2 text-center font-semibold text-sm">
+                            {totals.gradePoints}
+                          </td>
+                          <td className="py-2 text-center">
+                            <button
+                              type="button"
+                              onClick={() => removeSubject(s.id)}
+                              className="text-outline hover:text-error transition-colors p-1"
+                              aria-label="Remove subject"
+                            >
+                              <Trash2 className="size-3.5" />
+                            </button>
+                          </td>
+                        </tr>
+                      );
+                    })}
+                  </tbody>
+                  <tfoot className="border-t-2 border-outline-variant/40">
+                    <tr className="font-label text-sm">
+                      <td colSpan={2} className="pt-3 pr-2 text-right font-semibold text-on-surface-variant">
+                        Totals:
+                      </td>
+                      <td className="pt-3 pr-2 text-center font-bold text-primary">{totalCredits}</td>
+                      <td colSpan={5} className="pt-3 pr-2"></td>
+                      <td className="pt-3 pr-2 text-right font-semibold text-on-surface-variant text-xs whitespace-nowrap">
+                        SGPA:
+                      </td>
+                      <td className="pt-3 text-center font-bold text-primary">{sgpa.toFixed(2)}</td>
+                      <td></td>
+                    </tr>
+                  </tfoot>
+                </table>
+              </div>
+            )}
+
+            <div className="flex items-start gap-2 p-3 rounded-lg bg-surface-container border border-outline-variant/50">
+              <AlertCircle className="size-4 text-tertiary shrink-0 mt-0.5" />
+              <p className="font-body text-xs text-on-surface-variant">
+                Marks, grade, and SGPA are computed automatically using OU CBCS grading conventions (O: 90-100, A+: 80-89, A: 70-79, B+: 60-69, B: 50-59, C: 40-49, D: 36-39, F: &lt;36).
+              </p>
+            </div>
+          </div>
         </div>
       </form>
     </div>
   );
 }
 
-function Field({ label, icon: Icon, children }: { label: string; icon: React.ElementType; children: React.ReactNode }) {
+function Field({ label, children }: { label: string; children: React.ReactNode }) {
   return (
     <div className="space-y-1.5">
-      <label className="flex items-center gap-1.5 font-label text-xs uppercase tracking-wider text-on-surface-variant">
-        {Icon && <Icon className="size-3.5" />}
+      <label className="block font-label text-xs uppercase tracking-wider text-on-surface-variant">
         {label}
       </label>
       {children}

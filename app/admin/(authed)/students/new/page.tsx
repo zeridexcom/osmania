@@ -11,17 +11,12 @@ export default function NewStudentPage() {
     router.push("/admin/students");
   }, [router]);
 
-  const onSaveAndAddAnother = useCallback(() => {
-    router.refresh();
-  }, [router]);
-
   return (
     <div className="p-6">
       <div className="max-w-7xl mx-auto">
         <AddEditStudentForm
           mode="create"
           onDone={onDone}
-          onSaveAndAddAnother={onSaveAndAddAnother}
         />
       </div>
     </div>
