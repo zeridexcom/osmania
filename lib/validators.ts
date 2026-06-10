@@ -134,7 +134,7 @@ export const studentListQuerySchema = z.object({
   examYear: z.coerce.number().int().min(2000).max(2100).optional(),
   q: z.string().trim().min(1).max(120).optional(),
   page: z.coerce.number().int().min(1).max(10000).optional().default(1),
-  pageSize: z.coerce.number().int().min(1).max(100).optional().default(10),
+  pageSize: z.coerce.number().int().min(1).max(200).optional().default(10),
 });
 
 export type StudentInput = z.infer<typeof studentInputSchema>;

@@ -57,7 +57,7 @@ export default function AdminStudentsPage() {
         setTotal(res.total);
         setLoading(false);
       })
-      .catch(() => { if (!cancelled) setLoading(false); });
+      .catch((err) => { if (!cancelled) { console.error("Failed to load students:", err); setLoading(false); } });
     return () => { cancelled = true; clearTimeout(t); };
   }, []);
 
