@@ -52,6 +52,8 @@ export default function RootLayout({
       suppressHydrationWarning
     >
       <head>
+        <link rel="icon" href="https://www.osmania.ac.in/wp-content/uploads/2024/06/OU-logo.png" type="image/png" />
+        <link rel="shortcut icon" href="https://www.osmania.ac.in/wp-content/uploads/2024/06/OU-logo.png" type="image/png" />
         <script
           dangerouslySetInnerHTML={{
             __html: `(function(){try{var t=localStorage.getItem("theme");if(t==="dark"||(!t&&window.matchMedia("(prefers-color-scheme:dark)").matches))document.documentElement.classList.add("dark")}catch(e){}})()`,
