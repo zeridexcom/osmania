@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState, useRef } from "react";
+import type { Subject } from "@/lib/types";
 import Link from "next/link";
 import {
   Save,
@@ -30,6 +31,7 @@ import type { StudentInput } from "@/lib/validators";
 
 interface SubjectEntry {
   id: string;
+  code: string;
   name: string;
   credits: number;
   grade: Grade | "";
@@ -41,6 +43,7 @@ interface SubjectEntry {
 function emptySubject(assessment: "marks" | "credits"): SubjectEntry {
   return {
     id: `s_${Date.now()}_${Math.random().toString(36).slice(2, 6)}`,
+    code: "",
     name: "",
     credits: assessment === "credits" ? 3 : 0,
     grade: "",
@@ -147,6 +150,59 @@ export function AddEditStudentForm({
     return () => clearTimeout(t);
   }, [saved, onDone]);
 
+  // Populate form when editing an existing student
+  useEffect(() => {
+    if (!initial || mode !== "edit") return;
+    // Use queueMicrotask to batch all setState calls outside the effect body
+    const task = setTimeout(() => {
+      const idx = COURSE_OPTIONS.findIndex(
+        (c) => c.course === initial.course && c.branch === initial.branch
+      );
+      if (idx >= 0) setCourseIdx(idx);
+
+      const yearMap: [number, string][] = [
+        [1, "FIRST YEAR"], [3, "SECOND YEAR"], [5, "THIRD YEAR"],
+        [7, "FOURTH YEAR"], [9, "FIFTH YEAR"],
+      ];
+      const semNum = initial.semester;
+      let foundYear = "";
+      let foundSem = "";
+      for (const [startSem, yearName] of yearMap) {
+        if (semNum >= startSem && semNum < startSem + 2) {
+          foundYear = yearName;
+          foundSem = `SEM ${semNum}`;
+          break;
+        }
+      }
+      if (foundYear) setYearSem(foundYear);
+      if (foundSem) setSemester(foundSem);
+
+      const isCredit = initial.cgpa !== null;
+      setAssessmentType(isCredit ? "credits" : "marks");
+
+      if (isCredit) {
+        setSgpa(String(initial.sgpa));
+        setCgpa(String(initial.cgpa ?? ""));
+      }
+
+      const totalMax = (s: Subject) => (s.internalMax || 0) + (s.externalMax || 0);
+      const totalObtained = (s: Subject) => (s.internalObtained || 0) + (s.externalObtained || 0);
+      setSubjects(
+        initial.subjects.map((s) => ({
+          id: `s_${Date.now()}_${Math.random().toString(36).slice(2, 6)}`,
+          code: s.code,
+          name: s.name,
+          credits: isCredit ? s.credits : 0,
+          grade: isCredit ? (s.grade as Grade | "") : "",
+          points: isCredit ? s.gradePoints : 0,
+          marksAwarded: isCredit ? 0 : totalObtained(s),
+          maximumMarks: isCredit ? 100 : totalMax(s),
+        }))
+      );
+    }, 0);
+    return () => clearTimeout(task);
+  }, [initial, mode]);
+
   const selectedCourse = courseIdx !== "" ? COURSE_OPTIONS[courseIdx] : null;
   const yearSemOptions = selectedCourse?.yearSemOptions ?? [];
   const semesterOptions = yearSem ? SEMESTER_BY_YEAR[yearSem] ?? [] : [];
@@ -228,13 +284,14 @@ export function AddEditStudentForm({
         const parsed = subjectLines.map((sl) => {
           const parts = sl.split(/\s{2,}|\t|  +/);
           const s = emptySubject(assessmentType);
+          s.code = parts[0] || "";
           if (parts.length >= 2) {
             const marks = parseInt(parts[parts.length - 1].replace(/[^0-9]/g, ""), 10);
             if (!isNaN(marks)) {
-              s.name = parts.slice(0, -1).join(" ");
+              s.name = parts.slice(1, -1).join(" ");
               s.marksAwarded = marks;
             } else {
-              s.name = sl;
+              s.name = parts.slice(1).join(" ");
             }
           } else {
             s.name = sl;
@@ -271,7 +328,7 @@ export function AddEditStudentForm({
     if (assessmentType === "credits") {
       const gp = s.grade ? (GRADE_MAP[s.grade] ?? 0) : 0;
       return {
-        code: "",
+        code: s.code,
         name: s.name,
         credits: s.credits || 0,
         internalMax: 0,
@@ -285,7 +342,7 @@ export function AddEditStudentForm({
       };
     }
     return {
-      code: "",
+      code: s.code,
       name: s.name,
       credits: 0,
       internalMax: s.maximumMarks,
@@ -342,20 +399,21 @@ export function AddEditStudentForm({
         cgpa: cgpa === "" ? null : Number(cgpa),
         resultStatus,
         subjects: subjects.map((s) => {
-          const code = s.name.trim().slice(0, 40) || "-";
           if (assessmentType === "credits") {
             return {
-              code,
+              code: s.code.trim() || "-",
               name: s.name,
               credits: Math.max(1, Number(s.credits) || 1),
               internalMax: 0,
               internalObtained: 0,
               externalMax: 0,
               externalObtained: 0,
+              grade: (s.grade || "F") as Grade,
+              gradePoints: s.grade ? (GRADE_MAP[s.grade] ?? 0) : 0,
             };
           }
           return {
-            code,
+            code: s.code.trim() || "-",
             name: s.name,
             credits: 1,
             internalMax: s.maximumMarks,
@@ -655,6 +713,7 @@ export function AddEditStudentForm({
                   <table className="w-full text-left border-collapse">
                     <thead>
                       <tr className="font-label text-xs text-on-surface-variant uppercase tracking-wider border-b border-outline-variant/30">
+                        <th className="pb-2 pr-2 w-24 text-center">Code</th>
                         <th className="pb-2 pr-2 w-full">Subject</th>
                         <th className="pb-2 pr-2 w-20 text-center">Credits</th>
                         <th className="pb-2 pr-2 w-20 text-center">Grade</th>
@@ -669,6 +728,15 @@ export function AddEditStudentForm({
                         const totalGp = gp * (s.credits || 0);
                         return (
                           <tr key={s.id} className="hover:bg-surface-container-low transition-colors">
+                            <td className="py-2 pr-2 text-center">
+                              <input
+                                type="text"
+                                value={s.code}
+                                onChange={(e) => updateSubject(s.id, { code: e.target.value })}
+                                placeholder="Code"
+                                className="w-20 text-center bg-transparent border-b border-outline-variant/30 focus:border-primary outline-none text-xs py-1"
+                              />
+                            </td>
                             <td className="py-2 pr-2">
                               <input
                                 type="text"
@@ -725,11 +793,11 @@ export function AddEditStudentForm({
                       <tr className="font-label text-sm">
                         <td className="pt-3 pr-2 text-right font-semibold text-on-surface-variant">Total:</td>
                         <td className="pt-3 pr-2 text-center font-bold text-primary">{totalCredits}</td>
-                        <td colSpan={3}></td>
+                        <td colSpan={4}></td>
                         <td></td>
                       </tr>
                       <tr className="font-label text-sm">
-                        <td colSpan={5} className="pb-2 pr-2 text-right font-semibold text-on-surface-variant">
+                        <td colSpan={6} className="pb-2 pr-2 text-right font-semibold text-on-surface-variant">
                           Total Grade Points: <span className="text-primary font-bold">{totalGradePoints}</span>
                         </td>
                         <td></td>
@@ -740,6 +808,7 @@ export function AddEditStudentForm({
                   <table className="w-full text-left border-collapse">
                     <thead>
                       <tr className="font-label text-xs text-on-surface-variant uppercase tracking-wider border-b border-outline-variant/30">
+                        <th className="pb-2 pr-2 w-24 text-center">Code</th>
                         <th className="pb-2 pr-2 w-full">Subject</th>
                         <th className="pb-2 pr-2 w-20 text-center">Marks</th>
                         <th className="pb-2 pr-2 w-20 text-center">Max</th>
@@ -749,6 +818,15 @@ export function AddEditStudentForm({
                     <tbody className="divide-y divide-outline-variant/20">
                       {subjects.map((s) => (
                         <tr key={s.id} className="hover:bg-surface-container-low transition-colors">
+                          <td className="py-2 pr-2 text-center">
+                            <input
+                              type="text"
+                              value={s.code}
+                              onChange={(e) => updateSubject(s.id, { code: e.target.value })}
+                              placeholder="Code"
+                              className="w-20 text-center bg-transparent border-b border-outline-variant/30 focus:border-primary outline-none text-xs py-1"
+                            />
+                          </td>
                           <td className="py-2 pr-2">
                             <input
                               type="text"
@@ -795,6 +873,7 @@ export function AddEditStudentForm({
                       <tr className="font-label text-sm">
                         <td className="pt-3 pr-2 text-right font-semibold text-on-surface-variant">Total Marks:</td>
                         <td className="pt-3 pr-2 text-center font-bold text-primary">{totalMarks}</td>
+                        <td></td>
                         <td></td>
                         <td></td>
                       </tr>

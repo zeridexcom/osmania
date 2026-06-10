@@ -35,6 +35,10 @@ export const subjectInputSchema = z
     internalObtained: z.coerce.number().int().min(0).max(100),
     externalMax: z.coerce.number().int().min(0).max(200),
     externalObtained: z.coerce.number().int().min(0).max(200),
+    grade: z
+      .enum(["O", "A+", "A", "B+", "B", "C", "D", "F"])
+      .optional(),
+    gradePoints: z.coerce.number().min(0).max(10).optional(),
   })
   .superRefine((val, ctx) => {
     if (val.internalObtained > val.internalMax) {

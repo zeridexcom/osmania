@@ -34,7 +34,6 @@ function romanize(num: number): string {
 
 export function ResultCard({ student }: ResultCardProps) {
   const isPass = student.resultStatus === "PASS";
-  const isCreditBased = student.cgpa !== null;
 
   return (
     <div className="w-full flex flex-col gap-6 font-body">
@@ -174,11 +173,8 @@ export function ResultCard({ student }: ResultCardProps) {
               <tr className="bg-surface-container-low border-b border-outline-variant/30 text-xs uppercase tracking-widest font-label font-bold text-on-surface">
                 <th className="py-3.5 px-4">Subject Code</th>
                 <th className="py-3.5 px-4">Subject Name</th>
-                <th className="py-3.5 px-4 text-right">Internal</th>
-                <th className="py-3.5 px-4 text-right">External</th>
-                <th className="py-3.5 px-4 text-right">Total</th>
                 <th className="py-3.5 px-4 text-center">Grade</th>
-                {isCreditBased && <th className="py-3.5 px-4 text-center">Credits</th>}
+                <th className="py-3.5 px-4 text-center">Credits</th>
               </tr>
             </thead>
             <tbody className="font-body text-sm divide-y divide-outline-variant/15 text-on-surface">
@@ -191,23 +187,12 @@ export function ResultCard({ student }: ResultCardProps) {
                     {sub.code}
                   </td>
                   <td className="py-3 px-4 font-medium">{sub.name}</td>
-                  <td className="py-3 px-4 text-right font-mono text-on-surface-variant">
-                    {sub.internalObtained !== null ? sub.internalObtained : "—"}
-                  </td>
-                  <td className="py-3 px-4 text-right font-mono text-on-surface-variant">
-                    {sub.externalObtained !== null ? sub.externalObtained : "—"}
-                  </td>
-                  <td className="py-3 px-4 text-right font-mono font-semibold">
-                    {sub.totalObtained !== null ? sub.totalObtained : "—"}
-                  </td>
                   <td className="py-3 px-4 text-center font-headline font-bold text-primary">
                     {sub.grade}
                   </td>
-                  {isCreditBased && (
-                    <td className="py-3 px-4 text-center font-mono text-on-surface-variant">
-                      {sub.credits}
-                    </td>
-                  )}
+                  <td className="py-3 px-4 text-center font-mono text-on-surface-variant">
+                    {sub.credits}
+                  </td>
                 </tr>
               ))}
             </tbody>
@@ -217,19 +202,17 @@ export function ResultCard({ student }: ResultCardProps) {
         {/* Results Banner Box */}
           <div className="flex flex-col md:flex-row justify-between items-center bg-surface-container p-6 rounded-xl border border-outline-variant/30 mb-8 gap-6 md:gap-0">
             <div className="flex gap-12">
-              {isCreditBased && (
-                <div className="flex flex-col items-center">
-                  <span className="font-label text-xs text-on-surface-variant mb-1 uppercase tracking-wider font-bold">
-                    SGPA
-                  </span>
-                  <span className="font-headline text-4xl font-bold text-on-surface">
-                    {student.sgpa.toFixed(2)}
-                  </span>
-                </div>
-              )}
+              <div className="flex flex-col items-center">
+                <span className="font-label text-xs text-on-surface-variant mb-1 uppercase tracking-wider font-bold">
+                  SGPA
+                </span>
+                <span className="font-headline text-4xl font-bold text-on-surface">
+                  {student.sgpa.toFixed(2)}
+                </span>
+              </div>
               {student.cgpa !== null && (
                 <>
-                  {isCreditBased && <div className="w-px bg-outline-variant/50 h-14" />}
+                  <div className="w-px bg-outline-variant/50 h-14" />
                   <div className="flex flex-col items-center">
                     <span className="font-label text-xs text-on-surface-variant mb-1 uppercase tracking-wider font-bold">
                       CGPA

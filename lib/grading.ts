@@ -89,12 +89,23 @@ export interface StudentSubjectInput {
   internalObtained: number;
   externalMax: number;
   externalObtained: number;
+  grade?: Grade;
+  gradePoints?: number;
 }
 
 export function finalizeSubject(
   input: StudentSubjectInput
 ): Omit<Subject, "id"> {
-  const totals = computeSubjectTotals(input);
+  let grade: Grade;
+  let gradePoints: number;
+  if (input.grade !== undefined && input.gradePoints !== undefined) {
+    grade = input.grade;
+    gradePoints = input.gradePoints;
+  } else {
+    const totals = computeSubjectTotals(input);
+    grade = totals.grade;
+    gradePoints = totals.gradePoints;
+  }
   return {
     code: input.code,
     name: input.name,
@@ -103,10 +114,10 @@ export function finalizeSubject(
     internalObtained: input.internalObtained,
     externalMax: input.externalMax,
     externalObtained: input.externalObtained,
-    totalMax: totals.totalMax,
-    totalObtained: totals.totalObtained,
-    grade: totals.grade,
-    gradePoints: totals.gradePoints,
+    totalMax: input.internalMax + input.externalMax,
+    totalObtained: input.internalObtained + input.externalObtained,
+    grade,
+    gradePoints,
   };
 }
 
