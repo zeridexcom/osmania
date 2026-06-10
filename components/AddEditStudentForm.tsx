@@ -431,7 +431,18 @@ export function AddEditStudentForm({
       }
       setSaved(true);
     } catch (err) {
-      setError((err as Error).message);
+      const msg = (err as Error).message;
+      try {
+        const parsed = JSON.parse(msg);
+        if (parsed.error === "duplicate_hall_ticket") {
+          setError(
+            `This hall ticket (${rollNo.trim().toUpperCase()}) already exists in the database. ` +
+            "Go to the Students list to find and edit the existing record."
+          );
+          return;
+        }
+      } catch {}
+      setError(msg);
     } finally {
       setSubmitting(false);
     }

@@ -13,9 +13,9 @@ import {
   ChevronRight,
   ChevronDown,
   Filter,
+  Loader2,
 } from "lucide-react";
 import type { Student, ResultStatus } from "@/lib/types";
-import { mockGetAllStudents } from "@/lib/data/mock-state";
 import { clientGetAdminStudents, clientDeleteAdminStudent } from "@/lib/data/client";
 
 function examLabel(s: Student): string {
@@ -34,7 +34,9 @@ function statusPill(status: ResultStatus) {
 const PAGE_SIZE_OPTIONS = [10, 25, 50];
 
 export default function AdminStudentsPage() {
-  const [students, setStudents] = useState<Student[]>(() => mockGetAllStudents());
+  const [students, setStudents] = useState<Student[]>([]);
+  const [total, setTotal] = useState(0);
+  const [loading, setLoading] = useState(true);
   const [q, setQ] = useState("");
   const [courseFilter, setCourseFilter] = useState<string>("ALL");
   const [semesterFilter, setSemesterFilter] = useState<string>("ALL");
@@ -45,10 +47,18 @@ export default function AdminStudentsPage() {
 
   useEffect(() => {
     let cancelled = false;
+    const t = setTimeout(() => {
+      setLoading(true);
+    }, 0);
     clientGetAdminStudents({ pageSize: 200 })
-      .then((res) => { if (!cancelled) setStudents(res.items); })
-      .catch(() => {});
-    return () => { cancelled = true; };
+      .then((res) => {
+        if (cancelled) return;
+        setStudents(res.items);
+        setTotal(res.total);
+        setLoading(false);
+      })
+      .catch(() => { if (!cancelled) setLoading(false); });
+    return () => { cancelled = true; clearTimeout(t); };
   }, []);
 
   const filtered = useMemo(() => {
@@ -61,9 +71,8 @@ export default function AdminStudentsPage() {
     });
   }, [students, q, courseFilter, semesterFilter]);
 
-  const total = 12450;
   const totalPages = Math.ceil(total / pageSize);
-  const currentPage = Math.min(page, totalPages);
+  const currentPage = Math.min(page, totalPages || 1);
   const from = (currentPage - 1) * pageSize;
   const to = Math.min(from + pageSize, total);
   const pageItems = filtered.slice(0, pageSize);
@@ -181,9 +190,16 @@ export default function AdminStudentsPage() {
                     </td>
                   </tr>
                 ))}
-                {pageItems.length === 0 && (
+                {loading ? (
+                  <tr><td colSpan={7} className="py-16 text-center text-on-surface-variant font-body text-sm">
+                    <div className="flex items-center justify-center gap-2">
+                      <Loader2 className="size-5 animate-spin" />
+                      Loading students...
+                    </div>
+                  </td></tr>
+                ) : pageItems.length === 0 ? (
                   <tr><td colSpan={7} className="py-16 text-center text-on-surface-variant font-body text-sm">No students match your filters.</td></tr>
-                )}
+                ) : null}
               </tbody>
             </table>
           </div>
