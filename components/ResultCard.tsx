@@ -260,10 +260,10 @@ export function ResultCard({ student }: ResultCardProps) {
           <div className="text-center sm:text-right mt-6 sm:mt-0">
             <img
               alt="Controller of Examinations Signature"
-              className="h-14 object-contain mb-1.5 mx-auto sm:mr-0 opacity-80"
+              className="h-24 object-contain mx-auto sm:mr-0 opacity-80"
               src="/controller-signature.png"
             />
-            <p className="font-label text-xs text-on-surface-variant font-bold uppercase tracking-wider">
+            <p className="font-label text-sm text-on-surface-variant font-bold uppercase tracking-wider">
               Controller of Examinations
             </p>
           </div>
