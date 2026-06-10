@@ -328,8 +328,8 @@ export function AddEditStudentForm({
       const payload: StudentInput = {
         hallTicket: rollNo.trim().toUpperCase(),
         name: name.trim(),
-        fatherName: "",
-        motherName: "",
+        fatherName: "-",
+        motherName: "-",
         dob: now.toISOString().split("T")[0],
         course: selectedCourse!.course,
         branch: selectedCourse!.branch,
@@ -342,11 +342,12 @@ export function AddEditStudentForm({
         cgpa: cgpa === "" ? null : Number(cgpa),
         resultStatus,
         subjects: subjects.map((s) => {
+          const code = s.name.trim().slice(0, 40) || "-";
           if (assessmentType === "credits") {
             return {
-              code: "",
+              code,
               name: s.name,
-              credits: s.credits || 0,
+              credits: Math.max(1, Number(s.credits) || 1),
               internalMax: 0,
               internalObtained: 0,
               externalMax: 0,
@@ -354,9 +355,9 @@ export function AddEditStudentForm({
             };
           }
           return {
-            code: "",
+            code,
             name: s.name,
-            credits: 0,
+            credits: 1,
             internalMax: s.maximumMarks,
             internalObtained: s.marksAwarded,
             externalMax: 0,
