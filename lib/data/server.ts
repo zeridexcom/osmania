@@ -457,6 +457,17 @@ export async function serverGetAdminDashboard(): Promise<DashboardStats> {
     .order("exam_month", { ascending: false })
     .limit(1)
     .maybeSingle<Pick<StudentRow, "exam_year" | "exam_month" | "semester">>();
+  const { count: totalWithResult } = await supabase
+    .from("students")
+    .select("*", { count: "exact", head: true })
+    .in("result_status", ["PASS", "FAIL"]);
+  const { count: passedCount } = await supabase
+    .from("students")
+    .select("*", { count: "exact", head: true })
+    .eq("result_status", "PASS");
+  const passRate = totalWithResult && totalWithResult > 0
+    ? Math.round((passedCount! / totalWithResult) * 100)
+    : 0;
   const { count: activeNotices } = await supabase
     .from("notices")
     .select("*", { count: "exact", head: true })
@@ -468,10 +479,11 @@ export async function serverGetAdminDashboard(): Promise<DashboardStats> {
     course: import("@/lib/types").CourseCode;
     branch: string;
     created_at: string;
+    exam_year: number;
   }
   const { data: recent } = await supabase
     .from("students")
-    .select("id, hall_ticket, name, course, branch, created_at")
+    .select("id, hall_ticket, name, course, branch, created_at, exam_year")
     .order("created_at", { ascending: false })
     .limit(5)
     .returns<RecentRow[]>();
@@ -482,6 +494,7 @@ export async function serverGetAdminDashboard(): Promise<DashboardStats> {
     course: r.course,
     branch: r.branch,
     createdAt: r.created_at,
+    examYear: r.exam_year,
   }));
   const label = latestRow
     ? `${capMonth(latestRow.exam_month)} ${latestRow.exam_year}`
@@ -490,6 +503,7 @@ export async function serverGetAdminDashboard(): Promise<DashboardStats> {
   return {
     totalStudents: totalStudents ?? 0,
     addedThisMonth: addedThisMonth ?? 0,
+    passRate,
     latestExam: { label, detail },
     activeNotices: activeNotices ?? 0,
     recentStudents,

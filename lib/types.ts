@@ -100,11 +100,13 @@ export interface DashboardRecentStudent {
   course: CourseCode;
   branch: string;
   createdAt: string;
+  examYear: number;
 }
 
 export interface DashboardStats {
   totalStudents: number;
   addedThisMonth: number;
+  passRate: number;
   latestExam: { label: string; detail: string };
   activeNotices: number;
   recentStudents: DashboardRecentStudent[];

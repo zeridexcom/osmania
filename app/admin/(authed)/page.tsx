@@ -23,11 +23,23 @@ export default async function AdminDashboardPage() {
   let stats: Awaited<ReturnType<typeof serverGetAdminDashboard>>;
 
   if (isAdminApiConfigured()) {
-    stats = await serverGetAdminDashboard();
+    try {
+      stats = await serverGetAdminDashboard();
+    } catch {
+      stats = {
+        totalStudents: 0,
+        addedThisMonth: 0,
+        passRate: 0,
+        latestExam: { label: "—", detail: "No exam data" },
+        activeNotices: 0,
+        recentStudents: [],
+      };
+    }
   } else {
     stats = {
       totalStudents: 0,
       addedThisMonth: 0,
+      passRate: 0,
       latestExam: { label: "—", detail: "No exam data" },
       activeNotices: 0,
       recentStudents: [],
@@ -40,12 +52,13 @@ export default async function AdminDashboardPage() {
     name: s.name,
     course: s.course,
     createdAt: s.createdAt,
+    examYear: s.examYear,
     status: "Verified",
   }));
 
   const statCards = [
     { label: "Total Enrolled", value: stats.totalStudents.toLocaleString("en-IN"), icon: School },
-    { label: "Pass Rate", value: "87%", icon: TrendingUp },
+    { label: "Pass Rate", value: `${stats.passRate}%`, icon: TrendingUp },
     { label: "Recent Activity", value: stats.addedThisMonth.toLocaleString("en-IN"), icon: Clock },
   ];
 
@@ -140,7 +153,7 @@ export default async function AdminDashboardPage() {
                     <td className="py-3.5 px-5 font-body text-sm font-medium text-on-surface">{r.name}</td>
                     <td className="py-3.5 px-5 font-mono text-sm text-on-surface-variant">{r.hallTicket}</td>
                     <td className="py-3.5 px-5 font-body text-sm text-on-surface-variant">{r.course}</td>
-                    <td className="py-3.5 px-5 font-body text-sm text-on-surface-variant">2024</td>
+                    <td className="py-3.5 px-5 font-body text-sm text-on-surface-variant">{r.examYear}</td>
                     <td className="py-3.5 px-5">
                       <span className={r.status === "Verified" ? "admin-badge-pass" : "admin-badge-fail"}>
                         {r.status}
